@@ -38,7 +38,9 @@ TOP_K = 5
 MIN_SIMILARITY = 0.25          # chunks below this cosine similarity are ignored
 GROUNDING_THRESHOLD = 0.7      # min grounding score to accept an answer
 MAX_GENERATION_ATTEMPTS = 2    # generate once, retry once if not grounded
-RETRIEVAL_WEIGHT = 0.4         # confidence = 0.4*retrieval + 0.6*grounding
+RETRIEVAL_WEIGHT = 0.4        # confidence = 0.4*retrieval + 0.6*grounding
+MIN_RELEVANT_CHUNKS = 2        # fewer than this -> rewrite the query and retrieve again
+MAX_QUERY_REWRITES = 1         # at most one rewrite per question
 
 
 def validate():

@@ -1,0 +1,382 @@
+[
+  {
+    "query": "What is the core definition of Agentic AI as outlined in the eBook?",
+    "final_answer": "Agentic AI is defined as a type of artificial intelligence that creates impact by learning continuously, focusing on goals, and acting independently to anticipate needs. It goes beyond traditional AI systems by being proactive and adaptive, enabling autonomous decision-making and action (p. 11).",
+    "retrieved_context_chunks": [
+      "In this section, we will define what Agentic AI is and, more importantly, \nwhat it’s not, as it’s often misunderstood. While Agentic AI promises a \nshift from reactive to proactive problem-solving, doubts remain. Is it truly \nreal? Are all the claims about it accurate? \nIn this section, we cover the following topics: \n � What is Agentic AI? \n � How does it stand apart from other AI ,What can it do? \n � What value does it bring? \n � How are businesses using it in the real world? \nINTRODUCTION \nTO AGENTIC AI\n01",
+      "Agentic AI. \n \nThrough six focused chapters, we explore the journey from fundamental \nconcepts to practical applications. We delve into the intricate anatomy of \nAgentic AI systems, examine the power of multi-agent collaborations, and \nprovide frameworks for orchestrating these sophisticated technologies. \nMost importantly, we help you assess your organization's readiness for \nadopting Agentic AI and guide you through real-world applications that are \ntransforming industries today. \nDrawing on Konverge AI’s expertise in data and AI solutions and \nEmergence AI’s advancements in Autonomous Multi-Agent Orchestration \nfor Enterprises, this book strikes the balance between technical depth \nand accessibility.\n \nReading this guide will enhance your understanding of Agentic AI, spark",
+      "In this section, we explore the core components of agentic AI, explaining \nhow they work together to enable autonomous decision-making and \naction, on what they are classified. How do agents perceive and interact \nwith their environment? What drives their decisions? How can they adapt \nand learn over time? Here we cover the following topics: \n � The Building Blocks of Agentic AI \n � Key Components: Perception, Reasoning, Planning, Learning, \n and Execution \n � Types and Categories of Agents \n � Applications Across Industries \nANATOMY OF \nAN AGENTIC AI \nSYSTEM\n11",
+      "1.2 How Agentic AI Stands Apart \n \nAll AI systems analyze and create outputs - predictions, recommendations, or \ncontent. But Agentic AI creates impact: \nLearns \nContinuously\nFocuses on \nGoals\nActs \nIndependently\nAnticipating Needs\nSmart assistants schedule meetings and manage tasks \nbased on user preferences, proactively addressing needs.\nAdapting to Change\nIn supply chain management, Agentic AI adjusts inventory and \nreroutes shipments during disruptions to maintain efficiency.\nAligning with Goals\nDynamic pricing systems in eCommerce adjust prices in real-time \nto optimize sales and align with business goals. \nAgentic AI\nGoes beyond by acting autonomously \nto achieve goals (Impact-focused, \nproactive, and adaptive)\nOther AI systems\n \nProcesses data and follows",
+      "Preface\nArtificial intelligence has transitioned from standalone tools to \ninterconnected systems capable of autonomous decision-making. Agentic \nAI provides a practical framework for leveraging these systems, enabling \norganizations to drive greater efficiency and precision in their operations \nand innovations. \n \nThis book arrives at a pivotal moment, offering clarity and actionable \nguidance as businesses address the challenges and opportunities of AI \nsystems that can perceive, decide, and act independently. Whether you’re \na technology leader, an enterprise executive, or a professional exploring \nintelligent systems, this guide offers valuable insights into the potential of \nAgentic AI. \n \nThrough six focused chapters, we explore the journey from fundamental"
+    ],
+    "confidence_score": 0.87,
+    "sources": [
+      {
+        "page": 7,
+        "similarity": 0.7193,
+        "used_in_answer": true
+      },
+      {
+        "page": 4,
+        "similarity": 0.6965,
+        "used_in_answer": false
+      },
+      {
+        "page": 17,
+        "similarity": 0.6817,
+        "used_in_answer": true
+      },
+      {
+        "page": 11,
+        "similarity": 0.6774,
+        "used_in_answer": true
+      },
+      {
+        "page": 4,
+        "similarity": 0.668,
+        "used_in_answer": true
+      }
+    ],
+    "rewritten_queries": [],
+    "expected_in_scope": true,
+    "status": "PASS",
+    "problems": [],
+    "latency_seconds": 6.29
+  },
+  {
+    "query": "What are the main architectural components required to build agentic systems?",
+    "final_answer": "The main architectural components required to build agentic systems include:\n\n- **Decision-Making Layer**: Employs algorithms to analyze data and make informed decisions, incorporating elements like machine learning and rule-based reasoning (p. 32).\n- **Planning Layer**: Devises strategies to achieve complex goals, predicting outcomes and sequencing actions (p. 32).\n- **Key Components**: Perception, Reasoning, Planning, Learning, and Execution (p. 17).\n- **Agent**: The entity that interacts with the environment (p. 20).\n- **Environment**: The external world the agent interacts with (p. 20).\n- **Goals**: The desired outcomes driving the agent’s actions (p. 20).",
+    "retrieved_context_chunks": [
+      "2.2 Understanding the Building Blocks\nAt the heart of every Agentic AI system lies a delicate interplay of key elements: \nThe interaction between the agent, its environment, and its actions forms the \nfoundation of agentic AI. The environment can be static or dynamic, and the agent \ncan be reactive (responding to immediate stimuli) or proactive (planning for future \noutcomes). The agent’s use of memory and learning from interactions enables \ncontinuous improvement, leading to more effective and adaptive decision-making. \nAs we progress, we will see how different decision-making models influence how \nthese components work together. \nEffectors\nSensors\nGoals: The desired outcomes \ndriving the agent’s actions. \nEnvironment: The \nexternal world the agent \ninteracts with. \nAgent: The entity",
+      "In this section, we explore the core components of agentic AI, explaining \nhow they work together to enable autonomous decision-making and \naction, on what they are classified. How do agents perceive and interact \nwith their environment? What drives their decisions? How can they adapt \nand learn over time? Here we cover the following topics: \n � The Building Blocks of Agentic AI \n � Key Components: Perception, Reasoning, Planning, Learning, \n and Execution \n � Types and Categories of Agents \n � Applications Across Industries \nANATOMY OF \nAN AGENTIC AI \nSYSTEM\n11",
+      "Decision-Making Layer: \nAt the core of agentic systems is the decision-making layer. Here, the system \nemploys sophisticated algorithms to analyze incoming data and representations to \nmake informed decisions. This layer often incorporates elements of artificial \nintelligence such as machine learning models, reinforcement learning, or rule-based \nreasoning. The goal is to evaluate possible actions and select the most appropriate \nstrategy based on the system's objectives and current environmental context. \n \nPlanning Layer: \nAugmenting the decision-making process, the planning layer devises strategies to \nachieve complex goals over time. It involves predicting the outcomes of actions and \nsequencing them to reach desired objectives efficiently. Techniques such as",
+      "Multi Agentic systems could be organized into hierarchical (where an agent operates \nand communicates in a particular domain of influence) or peer-peer architecture \n(where an agent can talk to any other agent) [Masterman]. \nCommunication is a very important aspect of multi agent systems. Agents hearing all \nthe communication between other agents can have its pros and cons. Sometimes \nexcessive information from the communication chatter can interfere with the \ndecision-making capacity of the agents, whereas too little information can also have \nsimilar consequences. \nThere are some necessary components for a system to qualify as a multi-agent AI \nsystem. A system is a multi-agent AI system when it contains all the foundational",
+      "2.4 Categories and Types of Agentic Systems \nAgentic AI systems can be understood through two main lenses: \n \n4.1. Categories of Agentic Systems \nLet’s consider the scenario of an AI-based customer support system handling a user \ninquiry about a product return. Here's how different categories of agentic systems \nwould react and proceed: \nTypes based on Functionality \nand Behavior \nCategories based on \nComplexity and Application\n17\nSimple Reflex Agents\nRespond to immediate triggers without any internal model or \npredictive capability.\nExample: The system instantly replies to the customer with a \npre-defined response like, \"Please enter your order number to proceed \nwith the return process,\" whenever it detects a request for returns. \nModel-Based Agents"
+    ],
+    "confidence_score": 0.85,
+    "sources": [
+      {
+        "page": 20,
+        "similarity": 0.6762,
+        "used_in_answer": true
+      },
+      {
+        "page": 17,
+        "similarity": 0.6421,
+        "used_in_answer": true
+      },
+      {
+        "page": 32,
+        "similarity": 0.5928,
+        "used_in_answer": true
+      },
+      {
+        "page": 31,
+        "similarity": 0.5893,
+        "used_in_answer": false
+      },
+      {
+        "page": 23,
+        "similarity": 0.5813,
+        "used_in_answer": false
+      }
+    ],
+    "rewritten_queries": [],
+    "expected_in_scope": true,
+    "status": "PASS",
+    "problems": [],
+    "latency_seconds": 6.12
+  },
+  {
+    "query": "What real-world industry use cases for Agentic AI are discussed in the eBook?",
+    "final_answer": "The eBook discusses real-world industry use cases for Agentic AI in the following sectors:\n\n- Manufacturing\n- Retail\n- Healthcare\n- Construction\n- Pharmaceuticals\n- Education\n- Telecommunications (p. 54, p. 16)",
+    "retrieved_context_chunks": [
+      "Agentic AI is transforming industries by solving critical challenges with \ntailored solutions and delivering real, measurable results. From \nmanufacturing and retail to healthcare, construction, and \npharmaceuticals, these use cases illustrate what was needed, what was \ndone, and the impact it created.\nIn this section, we:\n � Highlight real-world examples across varied industries.\n � Discuss their unique challenges, solutions, and outcomes.\n � Show how AI drives innovation and delivers \n business success.\nPRACTICAL \nAPPLICATIONS \nOF AGENTIC AI\n48",
+      "AGENTIC AI FOR EXECUTIVES\n1.5 Agentic AI Use cases\n7 . Education \n8. Telecommunications \n9. Construction\n� Personalized Learning: AI adapts learning materials to suit each \n student’s progress and style, helping improve learning outcomes \n and engagement.\n \n� Automated Grading: AI agents handle grading of assignments and \n exams, saving educators time and ensuring consistency in evaluation. \n� Network Optimization: AI monitors network performance in real-time, \n detecting issues and automatically adjusting resources to maintain \n service quality. \n� Customer Support Automation: AI chatbots provide real-time \n support, resolving customer issues and reducing wait times \n for service requests. \n� Project Scheduling and Management: AI agents optimize construction",
+      "In this section, we will define what Agentic AI is and, more importantly, \nwhat it’s not, as it’s often misunderstood. While Agentic AI promises a \nshift from reactive to proactive problem-solving, doubts remain. Is it truly \nreal? Are all the claims about it accurate? \nIn this section, we cover the following topics: \n � What is Agentic AI? \n � How does it stand apart from other AI ,What can it do? \n � What value does it bring? \n � How are businesses using it in the real world? \nINTRODUCTION \nTO AGENTIC AI\n01",
+      "Agentic AI. \n \nThrough six focused chapters, we explore the journey from fundamental \nconcepts to practical applications. We delve into the intricate anatomy of \nAgentic AI systems, examine the power of multi-agent collaborations, and \nprovide frameworks for orchestrating these sophisticated technologies. \nMost importantly, we help you assess your organization's readiness for \nadopting Agentic AI and guide you through real-world applications that are \ntransforming industries today. \nDrawing on Konverge AI’s expertise in data and AI solutions and \nEmergence AI’s advancements in Autonomous Multi-Agent Orchestration \nfor Enterprises, this book strikes the balance between technical depth \nand accessibility.\n \nReading this guide will enhance your understanding of Agentic AI, spark",
+      "2.6 How Agentic AI Shapes Industries?\nAgentic AI systems are transforming industries by deploying specialized solutions \ntailored to unique challenges. These solutions are often implemented as vertical \nagents-AI systems designed to excel in specific domains or tasks, offering \nunparalleled efficiency and precision. They are called \"vertical\" because they focus \ndeeply on particular industries or applications rather than providing \ngeneral-purpose capabilities.\nConnecting the Dots: Agentic AI and Psychological Theories\nAlbert Bandura’s Social Learning \nTheory: Individuals actively shape \ntheir environment through \ninteractions, fostering learning \nand agency. \nAgentic AI: Represents this \nconcept by allowing systems to \nlearn from data, adapt, and make \nautonomous decisions."
+    ],
+    "confidence_score": 0.87,
+    "sources": [
+      {
+        "page": 54,
+        "similarity": 0.7347,
+        "used_in_answer": true
+      },
+      {
+        "page": 16,
+        "similarity": 0.6701,
+        "used_in_answer": true
+      },
+      {
+        "page": 7,
+        "similarity": 0.6661,
+        "used_in_answer": false
+      },
+      {
+        "page": 4,
+        "similarity": 0.6654,
+        "used_in_answer": false
+      },
+      {
+        "page": 26,
+        "similarity": 0.6476,
+        "used_in_answer": true
+      }
+    ],
+    "rewritten_queries": [],
+    "expected_in_scope": true,
+    "status": "PASS",
+    "problems": [],
+    "latency_seconds": 4.47
+  },
+  {
+    "query": "How does Agentic AI differ from traditional generative AI chatbots according to the text?",
+    "final_answer": "Agentic AI differs from traditional generative AI chatbots in that it operates autonomously to achieve goals, rather than just processing data and following commands. While chatbots may resolve customer queries, Agentic AI adapts to different situations, anticipates needs, and takes proactive steps to assist users (p. 12).",
+    "retrieved_context_chunks": [
+      "In this section, we will define what Agentic AI is and, more importantly, \nwhat it’s not, as it’s often misunderstood. While Agentic AI promises a \nshift from reactive to proactive problem-solving, doubts remain. Is it truly \nreal? Are all the claims about it accurate? \nIn this section, we cover the following topics: \n � What is Agentic AI? \n � How does it stand apart from other AI ,What can it do? \n � What value does it bring? \n � How are businesses using it in the real world? \nINTRODUCTION \nTO AGENTIC AI\n01",
+      "1.2 How Agentic AI Stands Apart \n \nAll AI systems analyze and create outputs - predictions, recommendations, or \ncontent. But Agentic AI creates impact: \nLearns \nContinuously\nFocuses on \nGoals\nActs \nIndependently\nAnticipating Needs\nSmart assistants schedule meetings and manage tasks \nbased on user preferences, proactively addressing needs.\nAdapting to Change\nIn supply chain management, Agentic AI adjusts inventory and \nreroutes shipments during disruptions to maintain efficiency.\nAligning with Goals\nDynamic pricing systems in eCommerce adjust prices in real-time \nto optimize sales and align with business goals. \nAgentic AI\nGoes beyond by acting autonomously \nto achieve goals (Impact-focused, \nproactive, and adaptive)\nOther AI systems\n \nProcesses data and follows",
+      "1.3 Capabilities of Agentic AI \n1.4 Value it creates\nCapability Description Example \nAutonomy Operates independently once \ngiven objectives \nSelf-driving cars making \nnavigation decisions \nDecision-\nMaking \nAnalyzes data to make \ninformed choices \nChatbots resolving customer \nqueries autonomously \nAdaptability Adjusts strategies based on \nreal-time inputs \nInventory management \nsystems optimizing stock levels \nLanguage \nUnderstanding\nInterprets natural \nlanguage instructions \nVirtual assistants processing \nuser commands\nWorkflow \nOptimization \nEnhances processes by \nidentifying efficiencies \nAutomated financial \nreporting systems \nScenario:\nA leading retail company recently implemented an \nAgentic AI system across its operations, aiming to",
+      "Clarity is key! Knowing what each type can do makes it a lot easier to use AI \neffectively and think about the solutions that work for you.\nRobotic Process Automation (RPA) and Agentic AI \nRPA excels at repetitive, rule-based tasks with structured data, like following a strict \nrecipe. Agentic AI adapts to different situations, handling unstructured inputs, much \nlike a chef improvising with available ingredients. \nLLMs vs. Agentic AI: Distinct Roles, Complementary Strengths \nAgents are more than LLMs. While LLMs are powerful tools for processing and \ngenerating human-like text, agents are goal-driven systems capable of performing \nactions autonomously in a dynamic environment. \nType Definition Capabilities Type Definition Capabilities \nTraditional AI\nNon-agentic AI \nAgentic AI",
+      "Understanding the Shift from Reactive to Proactive \nTechnology \nImagine Sarah, a busy entrepreneur juggling multiple projects. She's not just using a \ntool anymore - she's working with an AI assistant that doesn't just follow commands, \nbut understands her goals, anticipates her needs, and takes proactive steps to help \nher succeed. \nAgentic AI is like having a super-intelligent collaborator. It is not just a passive tool \nthat understands your business strategy, it suggests improvements, drafts proposals, \ntracks market trends, and even reaches out to potential partners without you \nmicromanaging every step. \nAgentic AI is\nAt its core, Agentic AI is about: \nA Chef: \nExpertly manages \nevery task to create \nthe perfect outcome. \nA Coach: \nContinuously adapts \nstrategies and leads"
+    ],
+    "confidence_score": 0.85,
+    "sources": [
+      {
+        "page": 7,
+        "similarity": 0.6636,
+        "used_in_answer": false
+      },
+      {
+        "page": 11,
+        "similarity": 0.6622,
+        "used_in_answer": true
+      },
+      {
+        "page": 12,
+        "similarity": 0.6234,
+        "used_in_answer": true
+      },
+      {
+        "page": 9,
+        "similarity": 0.6122,
+        "used_in_answer": true
+      },
+      {
+        "page": 8,
+        "similarity": 0.596,
+        "used_in_answer": true
+      }
+    ],
+    "rewritten_queries": [],
+    "expected_in_scope": true,
+    "status": "PASS",
+    "problems": [],
+    "latency_seconds": 5.13
+  },
+  {
+    "query": "What key challenges or limitations of Agentic AI are mentioned in the document?",
+    "final_answer": "Key challenges or limitations of Agentic AI mentioned in the document include:\n\n- Complex system design due to inter-agent communication and dependencies (p. 36).\n- Interoperability issues when integrating agents with existing systems (p. 36).\n- Data security vulnerabilities when sensitive data is shared (p. 36).\n- Conflicts arising from competing priorities among agents (p. 36, p. 39).\n- Scalability challenges that can strain computational resources (p. 36).\n- High costs associated with implementation (p. 36).\n- Slow development processes (p. 36).\n- Difficulties in ensuring seamless communication and coordination among diverse agents (p. 39).",
+    "retrieved_context_chunks": [
+      "This section dives into the essentials of bringing Agentic AI to life. We \nexplore the foundational elements that drive success, evaluate \nindustry-specific readiness, and outline strategies to overcome \nchallenges at every stage of adoption. \nFoundational elements to start implementing:\n � Data Readiness \n � Technological Infrastructure \n � Organizational Alignment and Strategy \n � Skilled Workforce \n � Cultural and Ethical Preparedness \nYOUR READINESS \nFOR AGENTIC AI\n41",
+      "3.4 Challenges and Mitigation Strategies of \nMulti-Agent Systems \nChallenge\nComplex \nSystem Design \nInteroperability \nData \nSecurity \nConflict \nResolution \nScalability \nCost of \nImplementation \nSlow \nDevelopment \nSophisticated \nOrchestration \nDescription\nCan become difficult to \ndesign due to inter-agent \ncommunication and \ndependencies. \nIntegrating agents with \nexisting ERP, WMS, and TMS \nsystems can be difficult. \nSensitive data shared \nbetween agents and \nexternal vendors can be \nvulnerable to breaches.\nAgents may have competing \npriorities (e.g., logistics vs. \ninventory) leading \nto inefficiencies. \nScaling agents for large \nsystems can strain \ncomputational resources and \nincrease latency. \nHigh initial investment in \ndeveloping and deploying \nmulti-agent systems.",
+      "logistical challenges. \n� Robust infrastructure and efficient resource allocation algorithms are necessary to \n support dynamic scaling. \n� The system must be designed to accommodate the addition or removal of agents \n without disrupting performance. \nReliability and Fault Tolerance\n \n� Maintaining system reliability is critical, particularly when dealing with \n partial failures. \n� A failure in one agent should not jeopardize the overall system's functionality or \n performance, necessitating advanced fault tolerance mechanisms.\nThese challenges highlight the complexity involved in orchestrating multi-agent \nsystems, requiring a careful balance of technical strategies and collaborative efforts.",
+      "develop performance metrics, and \nscale solutions. \nFoster strategic partnerships, \nalign ethical frameworks, and \nensure global compliance. \nRecommended \nStrategies \nIndustry \nManufacturing\nHealthcare \nFinancial \nServices\nRetail\nConstruction\nData \nMaturity \nTech \nInfrastructure \nTalent \nAvailability \nRegulatory \nAdaptability \nEthical \nFrameworks \nOverall \nStage\nKnow your Stage?\nScan the QR and know your organization’s readiness\nAGENTIC AI FOR EXECUTIVES",
+      "4.1 Challenges of Orchestrating Complex \nAgentic Systems\nCommunication and Coordination \n� Ensuring seamless communication among diverse agents can be difficult due to \n differences in functionality and sophistication. \n� Interoperability issues arise when agents are designed with varying \n technologies or standards. \n� Developing a uniform protocol for interaction is often essential, but it can be \n complex to implement and requires collaboration within the community. \nConflict Management\n \n� Agents operate autonomously, which can lead to conflicts arising from overlapping \n objectives, competition for resources, or differing priorities. \n� Resolving these conflicts without human intervention requires effective \n automated mechanisms.",
+      "strategic objectives of the organization. Human interaction in validating AI outputs is \ncritical to maintaining alignment with corporate ethical standards and objectives, thus \nmitigating potential risks associated with the AI's autonomous decision-making. \nEstablishing Rigorous Benchmarks: Defining precise, quantifiable performance \nmetrics is essential for assessing the capabilities of agentic AI systems. These \nmetrics act as benchmarks to gauge AI effectiveness, identifying areas in need of \nimprovement. This, in turn, allows for the continuous refinement of AI systems to \nbetter meet evolving corporate demands. \nExplainable AI Decisions: Ensuring transparency and understanding in AI \ndecision-making process is essential for fostering trust and compliance.",
+      "complex to implement and requires collaboration within the community. \nConflict Management\n \n� Agents operate autonomously, which can lead to conflicts arising from overlapping \n objectives, competition for resources, or differing priorities. \n� Resolving these conflicts without human intervention requires effective \n automated mechanisms.\n� Choosing the Right Agent: When multiple agents with the desired capabilities are \n available, a selection process is needed to ensure the most suitable agent is \n chosen, based on context, efficiency, and resource availability. \nScalability\n \n� Orchestrating large-scale systems with hundreds or thousands of agents presents \n logistical challenges. \n� Robust infrastructure and efficient resource allocation algorithms are necessary to",
+      "systems can strain \ncomputational resources and \nincrease latency. \nHigh initial investment in \ndeveloping and deploying \nmulti-agent systems. \nDeveloping a cohesive MAS \nmay take longer, especially \nwithout clear requirements. \nRequires advanced \norchestration to utilize agent \ncapabilities efficiently. \nMitigation Strategy\nUse modular agent \nframeworks to simplify \nagent development \nand deployment. \nAdopt standardized APIs \nand data formats for \nseamless integration. \nImplement end-to-end \nencryption, secure \nauthentication protocols, \nfor traceability. \nIntroduce a decision-making \nagent with conflict resolution \nalgorithms to \nmediate disputes. \nUse edge computing and \ncloud infrastructure for \ndistributed processing \nand scalability. \nStart with critical areas first;",
+      "without disrupting performance. \nReliability and Fault Tolerance\n \n� Maintaining system reliability is critical, particularly when dealing with \n partial failures. \n� A failure in one agent should not jeopardize the overall system's functionality or \n performance, necessitating advanced fault tolerance mechanisms.\nThese challenges highlight the complexity involved in orchestrating multi-agent \nsystems, requiring a careful balance of technical strategies and collaborative efforts.\n33\nAGENTIC AI FOR EXECUTIVES"
+    ],
+    "confidence_score": 0.82,
+    "sources": [
+      {
+        "page": 47,
+        "similarity": 0.6587,
+        "used_in_answer": false
+      },
+      {
+        "page": 36,
+        "similarity": 0.6445,
+        "used_in_answer": true
+      },
+      {
+        "page": 40,
+        "similarity": 0.6224,
+        "used_in_answer": false
+      },
+      {
+        "page": 52,
+        "similarity": 0.4431,
+        "used_in_answer": false
+      },
+      {
+        "page": 39,
+        "similarity": 0.6197,
+        "used_in_answer": true
+      },
+      {
+        "page": 45,
+        "similarity": 0.4187,
+        "used_in_answer": true
+      },
+      {
+        "page": 40,
+        "similarity": 0.6522,
+        "used_in_answer": false
+      },
+      {
+        "page": 36,
+        "similarity": 0.5047,
+        "used_in_answer": false
+      },
+      {
+        "page": 39,
+        "similarity": 0.6412,
+        "used_in_answer": false
+      }
+    ],
+    "rewritten_queries": [
+      "challenges, risks, limitations, ethical concerns, operational barriers",
+      "Key Limitations and Challenges in Implementing Autonomous Systems",
+      "obstacles organizations encounter when integrating intelligent agents into their operations"
+    ],
+    "expected_in_scope": true,
+    "status": "PASS",
+    "problems": [],
+    "latency_seconds": 8.53
+  },
+  {
+    "query": "What is the capital of France?",
+    "final_answer": "I cannot answer this based on the provided document.",
+    "retrieved_context_chunks": [
+      "success criteria. \n Report Generation Agent \nRole: Creates actionable reports and dashboards for business leaders. \nExample: Produces sales forecasts with visualizations \n and key performance indicators. \n36\nAGENTIC AI FOR EXECUTIVES",
+      "amount of computing that an agent must perform to complete a new task by \nreferencing relevant past plans and actions. The memory is also the place where an \nagent can store human demonstrations it has seen, which can expedite its \nprogress without as rigorous a planning and reasoning loop. An agent also has \nshort-term memory, which is typically its current context signified by prompts and \nany information available in its context length. \nExample: The chatbot recalls previous user preferences (LTM) to suggest relevant \nsolutions and uses the current conversation’s context (STM) to address immediate \nconcerns effectively. \n 5. Constitution \nAn agent needs to adhere to some regulations and policies depending on the \nimperatives of its task and goals. It needs to protect itself from being",
+      "and automates risk analysis, enhancing financial security and credit \n evaluations.\n� Smart Automation: Automation streamlines claims processing and \n personalizes recommendations, improving efficiency \n and customer satisfaction.\n6. Finance & Insurance\n1.5 Agentic AI Use cases\n09\nAGENTIC AI FOR EXECUTIVES",
+      "customer personalization. \nInvest in Infrastructure & Data: Ensure scalable \nsystems and high-quality data for decision-making. \nFoster Cross-Functional Collaboration: Build \nteams that combine IT, operations, and \nbusiness expertise.\nTrack Success: Use KPIs to monitor ROI \nand continuously improve AI efforts.\nAGENTIC AI FOR EXECUTIVES",
+      "Decision-Making Layer: \nAt the core of agentic systems is the decision-making layer. Here, the system \nemploys sophisticated algorithms to analyze incoming data and representations to \nmake informed decisions. This layer often incorporates elements of artificial \nintelligence such as machine learning models, reinforcement learning, or rule-based \nreasoning. The goal is to evaluate possible actions and select the most appropriate \nstrategy based on the system's objectives and current environmental context. \n \nPlanning Layer: \nAugmenting the decision-making process, the planning layer devises strategies to \nachieve complex goals over time. It involves predicting the outcomes of actions and \nsequencing them to reach desired objectives efficiently. Techniques such as"
+    ],
+    "confidence_score": 0.0,
+    "sources": [
+      {
+        "page": 42,
+        "similarity": 0.0745,
+        "used_in_answer": false
+      },
+      {
+        "page": 22,
+        "similarity": 0.0726,
+        "used_in_answer": false
+      },
+      {
+        "page": 15,
+        "similarity": 0.0711,
+        "used_in_answer": false
+      },
+      {
+        "page": 53,
+        "similarity": 0.0656,
+        "used_in_answer": false
+      },
+      {
+        "page": 32,
+        "similarity": 0.0635,
+        "used_in_answer": false
+      }
+    ],
+    "rewritten_queries": [],
+    "expected_in_scope": false,
+    "status": "PASS",
+    "problems": [],
+    "latency_seconds": 0.6
+  },
+  {
+    "query": "What role does memory play in Agentic AI workflows?",
+    "final_answer": "Memory in Agentic AI workflows enables the agent to learn from interactions, facilitating continuous improvement and leading to more effective and adaptive decision-making (p. 20).",
+    "retrieved_context_chunks": [
+      "A Journey into the Heart of Autonomous Intelligence \n \nAgentic AI refers to systems capable of autonomous decision-making and action in \npursuit of specific objectives. We have seen this field evolve from a set of theoretical \nideas to practical systems shaping industries. If you have been in AI long enough, you \nknow we are standing on the shoulders of giants. Let us take you through this, \nbreaking it down so you see not just what it is, but how it works and why it matters.\n \nHewitt et al. introduced actors as self-contained, interactive \nobjects with internal states, capable of concurrent actions and \ncommunication via message-passing. \nEarly Software Agents\nThese agents advanced tactical decision-making but lacked \nlong-term goals, focusing on isolated tasks within workflows.",
+      "2.2 Understanding the Building Blocks\nAt the heart of every Agentic AI system lies a delicate interplay of key elements: \nThe interaction between the agent, its environment, and its actions forms the \nfoundation of agentic AI. The environment can be static or dynamic, and the agent \ncan be reactive (responding to immediate stimuli) or proactive (planning for future \noutcomes). The agent’s use of memory and learning from interactions enables \ncontinuous improvement, leading to more effective and adaptive decision-making. \nAs we progress, we will see how different decision-making models influence how \nthese components work together. \nEffectors\nSensors\nGoals: The desired outcomes \ndriving the agent’s actions. \nEnvironment: The \nexternal world the agent \ninteracts with. \nAgent: The entity",
+      "1.2 How Agentic AI Stands Apart \n \nAll AI systems analyze and create outputs - predictions, recommendations, or \ncontent. But Agentic AI creates impact: \nLearns \nContinuously\nFocuses on \nGoals\nActs \nIndependently\nAnticipating Needs\nSmart assistants schedule meetings and manage tasks \nbased on user preferences, proactively addressing needs.\nAdapting to Change\nIn supply chain management, Agentic AI adjusts inventory and \nreroutes shipments during disruptions to maintain efficiency.\nAligning with Goals\nDynamic pricing systems in eCommerce adjust prices in real-time \nto optimize sales and align with business goals. \nAgentic AI\nGoes beyond by acting autonomously \nto achieve goals (Impact-focused, \nproactive, and adaptive)\nOther AI systems\n \nProcesses data and follows",
+      "Clarity is key! Knowing what each type can do makes it a lot easier to use AI \neffectively and think about the solutions that work for you.\nRobotic Process Automation (RPA) and Agentic AI \nRPA excels at repetitive, rule-based tasks with structured data, like following a strict \nrecipe. Agentic AI adapts to different situations, handling unstructured inputs, much \nlike a chef improvising with available ingredients. \nLLMs vs. Agentic AI: Distinct Roles, Complementary Strengths \nAgents are more than LLMs. While LLMs are powerful tools for processing and \ngenerating human-like text, agents are goal-driven systems capable of performing \nactions autonomously in a dynamic environment. \nType Definition Capabilities Type Definition Capabilities \nTraditional AI\nNon-agentic AI \nAgentic AI",
+      "and agency. \nAgentic AI: Represents this \nconcept by allowing systems to \nlearn from data, adapt, and make \nautonomous decisions. \nJean Piaget’s Cognitive \nDevelopment Theory: Intelligence \nevolves through distinct stages, \nshaped by experiences and \ninteractions with the environment. \n \nAgentic AI: Mirrors these stages, \nprogressively enhancing its \nlearning and adapting to complex \ntasks over time.\n20\nAGENTIC AI FOR EXECUTIVES"
+    ],
+    "confidence_score": 0.84,
+    "sources": [
+      {
+        "page": 18,
+        "similarity": 0.6097,
+        "used_in_answer": false
+      },
+      {
+        "page": 20,
+        "similarity": 0.6088,
+        "used_in_answer": true
+      },
+      {
+        "page": 11,
+        "similarity": 0.6004,
+        "used_in_answer": false
+      },
+      {
+        "page": 9,
+        "similarity": 0.596,
+        "used_in_answer": false
+      },
+      {
+        "page": 26,
+        "similarity": 0.5939,
+        "used_in_answer": true
+      }
+    ],
+    "rewritten_queries": [],
+    "expected_in_scope": true,
+    "status": "PASS",
+    "problems": [],
+    "latency_seconds": 3.88
+  },
+  {
+    "query": "Who won the 2022 FIFA World Cup?",
+    "final_answer": "I cannot answer this based on the provided document.",
+    "retrieved_context_chunks": [
+      "About the Customer \nA large US-based pharma/biopharma \nmanufacturer with a global \ndistribution network, serving multiple \nproducts across diverse regions. \nProblem Statement & Solution \nThe client needed late-stage, \ncustomized packaging and labeling \nbased on real-time demand forecasts. \nIntelligent agents were used to track \nregional regulations, forecast demand, \nand automate packaging and \nartwork customization. \nImpact \n \nReduced Costs: Minimized waste and rerouting.\nEnhanced Flexibility: Adapted quickly to supply chain and market changes. \nFaster Market Entry: Streamlined processes sped up introductions. \nRegulatory Compliance: Ensured market access while meeting local regulations. \nEnhancing Pharma Packaging with AI-Driven Customization 02",
+      "AGENTIC AI FOR EXECUTIVES\nGenerative AI Service Providers 2024\nPeMa Quadrant\nRESEARCH\n22\nKonverge AI: Recognized as a Leading Global Data & AI \nServices Provider \nAbout AIM Research PeMa Quadrant - A reliable industry standard to evaluate vendor \ncompetencies to aid businesses in choosing the most suitable data engineering service \nprovider aligned to their business needs.\nKonverge AI is honored to be featured in AIM \nResearch's Penetration and Maturity (PeMa) \nQuadrant, a trusted industry benchmark that \nevaluates vendor competencies. This recognition \nhighlights our position as one of the leading Data \nEngineering Services Providers globally and \nacknowledges our distinction as a Generative AI \nServices Provider for two consecutive years. \nKonverge AI",
+      "Use cases\nAbout the Customer \nA premier infrastructure solutions \nprovider with over 50 years of \nexpertise, operating \nin 29 countries. \nProblem Statement & Solution \nThe company faced inefficiencies in \nextracting critical data from BOMs. \nAgentic AI-driven data extraction and \ncontextual understanding models \nstreamlined the process, \nensuring accuracy. \nImpact \n \nReduced bandwidth consumption by 80% and improved accuracy to 100%, \nspeeding up operations and laying the groundwork for future advancements. \nAbout the Customer \nA leading finance technology \ncompany aiming to enhance \ncustomer engagement in loan \neligibility processes. \nProblem Statement & Solution \nThe loan eligibility process was slow \nand inefficient. Agentic AI-powered \nautomation and hybrid AI-human",
+      "A Chef: \nExpertly manages \nevery task to create \nthe perfect outcome. \nA Coach: \nContinuously adapts \nstrategies and leads \nthe team to success. \nA Coordinator: \nOrchestrates complex \nworkflows with \nprecision and \nharmony. \nA Project Manager: \nDrives progress with \nminimal supervision, \nensuring smooth \nexecution. \n� Understanding context beyond literal instructions \n� Breaking down complex goals \n� Making independent, autonomous decisions \n� Learning and adapting dynamically \n� Taking initiative without constant human supervision\n02\nAGENTIC AI FOR EXECUTIVES",
+      "Regulatory Compliance: Ensured market access while meeting local regulations. \nEnhancing Pharma Packaging with AI-Driven Customization 02 \nDriving Factory 4.0 Adoption with AI-Powered Insights 01 \n49\nAGENTIC AI FOR EXECUTIVES"
+    ],
+    "confidence_score": 0.0,
+    "sources": [
+      {
+        "page": 55,
+        "similarity": 0.0992,
+        "used_in_answer": false
+      },
+      {
+        "page": 28,
+        "similarity": 0.09,
+        "used_in_answer": false
+      },
+      {
+        "page": 57,
+        "similarity": 0.0807,
+        "used_in_answer": false
+      },
+      {
+        "page": 8,
+        "similarity": 0.0785,
+        "used_in_answer": false
+      },
+      {
+        "page": 55,
+        "similarity": 0.0761,
+        "used_in_answer": false
+      }
+    ],
+    "rewritten_queries": [],
+    "expected_in_scope": false,
+    "status": "PASS",
+    "problems": [],
+    "latency_seconds": 0.56
+  }
+]

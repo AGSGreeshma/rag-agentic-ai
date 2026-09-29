@@ -1,6 +1,6 @@
 """
 LangGraph RAG workflow:
-retrieve -> grade_documents -> generate -> check_grounding -> finalize / refuse
+retrieve -> grade_documents -> (rewrite_query -> retrieve) -> generate -> check_grounding -> finalize / refuse
 """
 from typing import TypedDict
 
@@ -24,12 +24,28 @@ Return the numbers of the passages that contain information that helps answer th
 question, even partially. Return an empty list if none do. A passage that only shares
 a keyword but does not help answer the question is NOT relevant."""
 
+REWRITE_PROMPT = """You write search queries for a vector database built from an eBook about Agentic AI.
+Almost every passage in the eBook mentions "Agentic AI", so that phrase is useless for search.
+
+Write 3 different search queries for the question below:
+1. A short list of the topic's key terms plus synonyms
+   (e.g. "challenges, risks, barriers, limitations, concerns").
+2. A phrase worded like a section heading in a business eBook
+   (e.g. "Challenges and mitigation strategies of multi-agent systems").
+3. A phrase from the angle of an organization implementing it
+   (e.g. "challenges organizations face when implementing and adopting AI agents").
+
+Do NOT use the words "Agentic AI", "eBook", "document" or "text" in the queries.
+
+Question: {question}"""
+
 ANSWER_PROMPT = """You answer questions using ONLY the context below, taken from an eBook about Agentic AI.
 
 Rules:
 - Use only information in the context. Never use outside knowledge.
-- If the context does not contain the answer, reply exactly: "{refusal}"
-- - Cite pages inline, like (p. 12), using ONLY the page numbers shown in the
+- If the context contains only part of the answer, answer with what it does contain.
+- Only if the context contains nothing relevant to the question, reply exactly: "{refusal}"
+- Cite pages inline, like (p. 12), using ONLY the page numbers shown in the
   [Passage N | page X] headers. Ignore any page numbers that appear inside the text itself.
 - Be concise: a short paragraph or a few bullet points.
 
@@ -66,6 +82,8 @@ class Chunk(TypedDict):
 
 class AgentState(TypedDict):
     question: str
+    search_queries: list[str]
+    rewrites: int
     chunks: list[Chunk]
     answer: str
     grounding_score: float
@@ -75,6 +93,10 @@ class AgentState(TypedDict):
 
 class RelevanceGrade(BaseModel):
     relevant_ids: list[int] = Field(description="Numbers of the passages that help answer the question")
+
+
+class RewrittenQueries(BaseModel):
+    queries: list[str] = Field(description="Three alternative search queries")
 
 
 class GroundingGrade(BaseModel):
@@ -95,6 +117,7 @@ def build_rag_graph():
     vector_store = PineconeVectorStore(index_name=config.PINECONE_INDEX_NAME, embedding=embeddings)
     llm = ChatOpenAI(model=config.LLM_MODEL, temperature=0)
     relevance_grader = llm.with_structured_output(RelevanceGrade)
+    query_rewriter = llm.with_structured_output(RewrittenQueries)
     grounding_grader = llm.with_structured_output(GroundingGrade)
 
     def format_chunks(chunks: list[Chunk]) -> str:
@@ -107,17 +130,24 @@ def build_rag_graph():
 
     # --- Nodes ---
     def retrieve(state: AgentState):
-        results = vector_store.similarity_search_with_score(state["question"], k=config.TOP_K)
-        chunks = [
-            {
-                "text": doc.page_content,
-                "page": int(doc.metadata.get("page", 0)),
-                "similarity": round(float(score), 4),
-                "relevant": False,
-            }
-            for doc, score in results
-        ]
-        return {"chunks": chunks}
+        queries = state["search_queries"] or [state["question"]]
+        # Keep chunks already judged relevant on a previous pass
+        merged: dict[str, Chunk] = {c["text"]: c for c in relevant_chunks(state)}
+        # Take the top-k of EACH query (scores from different queries aren't comparable,
+        # so we merge rather than re-rank them against each other)
+        for query in queries:
+            for doc, score in vector_store.similarity_search_with_score(query, k=config.TOP_K):
+                text = doc.page_content
+                if text in merged:
+                    merged[text]["similarity"] = max(merged[text]["similarity"], round(float(score), 4))
+                else:
+                    merged[text] = {
+                        "text": text,
+                        "page": int(doc.metadata.get("page", 0)),
+                        "similarity": round(float(score), 4),
+                        "relevant": False,
+                    }
+        return {"chunks": list(merged.values())}
 
     def grade_documents(state: AgentState):
         candidates = [c for c in state["chunks"] if c["similarity"] >= config.MIN_SIMILARITY]
@@ -128,6 +158,11 @@ def build_rag_graph():
         )
         keep = {candidates[i - 1]["text"] for i in grade.relevant_ids if 1 <= i <= len(candidates)}
         return {"chunks": [{**c, "relevant": c["text"] in keep} for c in state["chunks"]]}
+
+    def rewrite_query(state: AgentState):
+        result = query_rewriter.invoke(REWRITE_PROMPT.format(question=state["question"]))
+        queries = [q.strip() for q in result.queries if q.strip()][:3]
+        return {"search_queries": queries, "rewrites": state["rewrites"] + 1}
 
     def generate(state: AgentState):
         prompt = ANSWER_PROMPT.format(
@@ -161,7 +196,13 @@ def build_rag_graph():
 
     # --- Routing ---
     def route_after_grading(state: AgentState) -> str:
-        return "generate" if relevant_chunks(state) else "refuse"
+        relevant = relevant_chunks(state)
+        on_topic = any(c["similarity"] >= config.MIN_SIMILARITY for c in state["chunks"])
+        enough = len(relevant) >= config.MIN_RELEVANT_CHUNKS
+        out_of_rewrites = state["rewrites"] >= config.MAX_QUERY_REWRITES
+        if enough or not on_topic or out_of_rewrites:
+            return "generate" if relevant else "refuse"
+        return "rewrite_query"
 
     def route_after_grounding(state: AgentState) -> str:
         if is_refusal(state["answer"]):
@@ -176,6 +217,7 @@ def build_rag_graph():
     workflow = StateGraph(AgentState)
     workflow.add_node("retrieve", retrieve)
     workflow.add_node("grade_documents", grade_documents)
+    workflow.add_node("rewrite_query", rewrite_query)
     workflow.add_node("generate", generate)
     workflow.add_node("check_grounding", check_grounding)
     workflow.add_node("finalize", finalize)
@@ -183,11 +225,16 @@ def build_rag_graph():
 
     workflow.add_edge(START, "retrieve")
     workflow.add_edge("retrieve", "grade_documents")
-    workflow.add_conditional_edges("grade_documents", route_after_grading,
-                                   {"generate": "generate", "refuse": "refuse"})
+    workflow.add_conditional_edges(
+        "grade_documents", route_after_grading,
+        {"generate": "generate", "rewrite_query": "rewrite_query", "refuse": "refuse"},
+    )
+    workflow.add_edge("rewrite_query", "retrieve")
     workflow.add_edge("generate", "check_grounding")
-    workflow.add_conditional_edges("check_grounding", route_after_grounding,
-                                   {"finalize": "finalize", "generate": "generate", "refuse": "refuse"})
+    workflow.add_conditional_edges(
+        "check_grounding", route_after_grounding,
+        {"finalize": "finalize", "generate": "generate", "refuse": "refuse"},
+    )
     workflow.add_edge("finalize", END)
     workflow.add_edge("refuse", END)
     return workflow.compile()
@@ -199,7 +246,8 @@ def build_rag_graph():
 def run_query(graph, question: str) -> dict:
     """Invoke the graph and shape the output into the required response format."""
     result = graph.invoke({
-        "question": question, "chunks": [], "answer": "",
+        "question": question, "search_queries": [], "rewrites": 0,
+        "chunks": [], "answer": "",
         "grounding_score": 0.0, "confidence_score": 0.0, "attempts": 0,
     })
     return {
@@ -211,6 +259,7 @@ def run_query(graph, question: str) -> dict:
             {"page": c["page"], "similarity": c["similarity"], "used_in_answer": c["relevant"]}
             for c in result["chunks"]
         ],
+        "rewritten_queries": result["search_queries"],
     }
 
 
