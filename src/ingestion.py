@@ -9,7 +9,7 @@ import argparse
 import re
 import time
 
-from langchain_community.document_loaders import PyPDFLoader
+from pypdf import PdfReader
 from langchain_core.documents import Document
 from langchain_openai import OpenAIEmbeddings
 from langchain_pinecone import PineconeVectorStore
@@ -25,20 +25,17 @@ def clean_text(text: str) -> str:
 
 def load_pages(pdf_path) -> list[Document]:
     """One Document per page, cleaned, with near-empty pages removed."""
-    raw_pages = PyPDFLoader(str(pdf_path)).load()
+    reader = PdfReader(str(pdf_path))
     pages = []
-    for doc in raw_pages:
-        text = clean_text(doc.page_content)
+    for page_num, page in enumerate(reader.pages, start=1):
+        text = clean_text(page.extract_text() or "")
         if len(text) < config.MIN_PAGE_CHARS:
             continue  # cover, title and section-divider pages
         pages.append(Document(
             page_content=text,
-            metadata={
-                "source": pdf_path.name,
-                "page": doc.metadata["page"] + 1,  # PyPDFLoader is 0-indexed
-            },
+            metadata={"source": pdf_path.name, "page": page_num},
         ))
-    print(f"Loaded {len(raw_pages)} pages, kept {len(pages)} with real text")
+    print(f"Loaded {len(reader.pages)} pages, kept {len(pages)} with real text")
     return pages
 def split_pages(pages: list[Document]) -> list[Document]:
     splitter = RecursiveCharacterTextSplitter(
