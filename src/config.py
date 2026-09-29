@@ -4,6 +4,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+MIN_PAGE_CHARS = 100          
+PINECONE_CLOUD = "aws"
+PINECONE_REGION = "us-east-1"
+
 # Paths
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_DIR = BASE_DIR / "data"
