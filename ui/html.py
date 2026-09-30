@@ -90,6 +90,10 @@ def header_html(status: SystemStatus) -> str:
     if status.mode == "mock":
         banner = ('<div class="ara-banner">Mock mode: responses are sample data from the mock client, '
                   'not from the RAG backend. Unset RAG_API_MODE to connect to FastAPI.</div>')
+    elif status.error:
+        # Say which dependency failed. Without this the UI can only show OFFLINE/DEGRADED, which
+        # is the same picture for a missing API key, an unreachable index and a bad model name.
+        banner = f'<div class="ara-banner">{_e(status.error)}</div>'
     return _join(
         '<div class="ara-header">',
         '<div class="ara-brand">',

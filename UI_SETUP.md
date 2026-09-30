@@ -7,11 +7,19 @@ and every answer carries a groundedness chip plus two collapsible drawers:
 
 ## Run it
 
-Two terminals, both with the venv active, from the project root:
+One terminal is enough. With no `RAG_API_URL` set, the UI runs the RAG pipeline in the
+Streamlit process:
 
 ```bash
-uvicorn app:app --reload          # 1. FastAPI backend  -> http://127.0.0.1:8000/docs
-streamlit run streamlit_app.py    # 2. Streamlit UI     -> http://localhost:8501
+streamlit run streamlit_app.py    # Streamlit UI -> http://localhost:8501
+```
+
+To go through the FastAPI backend instead, run it and point the UI at it (two terminals, both
+with the venv active, from the project root):
+
+```bash
+uvicorn app:app --reload                                    # 1. backend -> http://127.0.0.1:8000/docs
+RAG_API_URL=http://127.0.0.1:8000 streamlit run streamlit_app.py   # 2. UI
 ```
 
 To design or demo the UI without the backend (clearly labelled sample data):
@@ -23,14 +31,16 @@ RAG_API_MODE=mock streamlit run streamlit_app.py
 $env:RAG_API_MODE="mock"; streamlit run streamlit_app.py; Remove-Item Env:RAG_API_MODE
 ```
 
-Point the UI at a different backend with `RAG_API_URL` (default `http://127.0.0.1:8000`).
+`RAG_API_URL` selects the transport: set it to use HTTP, leave it unset to run in-process.
+Streamlit Community Cloud starts only the Streamlit process, so the deployed app leaves it unset
+and reads its keys from **Manage app -> Settings -> Secrets** instead of `.env`.
 
 ## Frontend architecture
 
 ```
 streamlit_app.py      Page flow and session state only
 ui/
-  api_client.py       API service layer: HttpRAGClient (FastAPI) and MockRAGClient, same interface
+  api_client.py       API service layer: HttpRAGClient, InProcessRAGClient, MockRAGClient, one interface
   models.py           RAGResponse, Source, KBInfo, SystemStatus: normalises any backend response
   pipeline.py         PipelineTracker: turns LangGraph node events into UI pipeline steps
   html.py             Pure HTML builders for every component (testable without Streamlit)
@@ -38,6 +48,9 @@ ui/
   theme.py            Design tokens and CSS
 .streamlit/config.toml  Dark base theme
 ```
+
+The pipeline itself lives in `src/engine.py`. Both `app.py` and `InProcessRAGClient` call it, so
+the HTTP and in-process paths run identical retrieval, embeddings and generation.
 
 ## Backend endpoints used by the UI
 

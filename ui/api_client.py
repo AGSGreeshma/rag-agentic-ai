@@ -1,12 +1,22 @@
 """API service layer: the only place the UI talks to the backend.
 
-    RAG_API_URL   base URL of the FastAPI backend (default http://127.0.0.1:8000)
+    RAG_API_URL   base URL of a running FastAPI backend. Set it to use HTTP mode;
+                  leave it unset to run the RAG pipeline inside this process.
     RAG_API_MODE  "live" (default) or "mock" to develop the UI without a backend
 
-Both clients expose the same interface, so switching is a one-line change:
+Three interchangeable clients, all with the same interface:
     health()      -> SystemStatus
     kb_info()     -> KBInfo | None
+    ask(query)    -> RAGResponse
     stream(query) -> iterator of pipeline events, ending with {"type": "result", "response": RAGResponse}
+
+    HttpRAGClient       talks to uvicorn over HTTP/SSE          (local development, any API host)
+    InProcessRAGClient  calls src/engine.py directly            (Streamlit Community Cloud)
+    MockRAGClient       sample data, never real                 (UI work without credentials)
+
+Importing src.config here (rather than only inside the in-process client) is deliberate: it is
+what loads Streamlit Secrets into the environment, and RAG_API_URL / RAG_API_MODE themselves may
+come from there, so it has to happen before get_client() reads them.
 """
 from __future__ import annotations
 
@@ -17,6 +27,7 @@ from typing import Iterator, Optional, Protocol
 
 import httpx
 
+from src import config  # noqa: F401  - imported for its Streamlit Secrets side effect
 from ui.models import KBInfo, RAGResponse, SystemStatus
 
 DEFAULT_API_URL = "http://127.0.0.1:8000"
@@ -33,6 +44,17 @@ class RAGClient(Protocol):
     def health(self) -> SystemStatus: ...
     def kb_info(self) -> Optional[KBInfo]: ...
     def stream(self, query: str) -> Iterator[dict]: ...
+
+
+def _hint_for(kind: Optional[str]) -> Optional[str]:
+    """Turn the engine's error `kind` into something the user can act on."""
+    return {
+        "config": "An API key is missing. Set it in .env locally, or in Streamlit Cloud under "
+                  "Settings -> Secrets.",
+        "pinecone": "Could not reach the Pinecone index. Check PINECONE_API_KEY and "
+                    "PINECONE_INDEX_NAME, and that the index has been ingested.",
+        "llm": "The LLM call failed. Check OPENAI_API_KEY and the account's quota.",
+    }.get(kind or "")
 
 
 # ---------------------------------------------------------------------------
@@ -96,7 +118,7 @@ class HttpRAGClient:
                         continue
                     event = json.loads(line[5:].strip())
                     if event.get("type") == "error":
-                        raise APIError("The RAG pipeline failed.", hint=event.get("message"))
+                        raise APIError("The RAG pipeline failed.", hint=_detail_hint(event))
                     if event.get("type") == "result":
                         yield {"type": "result", "response": RAGResponse.from_api(event["data"])}
                         return
@@ -113,6 +135,96 @@ def _detail(r: httpx.Response) -> Optional[str]:
         return str(r.json().get("detail"))
     except Exception:
         return r.text[:300] or None
+
+
+def _detail_hint(event: dict) -> Optional[str]:
+    """What actually went wrong, plus what to do about it, for an engine error event."""
+    parts = [event.get("message"), event.get("hint") or _hint_for(event.get("kind"))]
+    return " ".join(p for p in parts if p) or None
+
+
+# ---------------------------------------------------------------------------
+# In-process client (no HTTP server)
+# ---------------------------------------------------------------------------
+class InProcessRAGClient:
+    """Runs the real RAG pipeline inside the Streamlit process.
+
+    Streamlit Community Cloud starts one process - `streamlit run streamlit_app.py` - so nothing
+    is listening on 127.0.0.1:8000 and HttpRAGClient can only ever report the backend offline.
+    This client drops the HTTP hop and calls src/engine.py, the same module app.py serves, so the
+    deployed app does real retrieval against the real Pinecone index with the real LLM.
+
+    src.engine is imported lazily: it pulls in langchain, langgraph and pinecone, and an
+    ImportError or a missing key has to surface as a status the UI can render, not as a crash
+    while Streamlit is still importing the script.
+    """
+
+    def __init__(self) -> None:
+        self._engine = None
+        self._load_error: Optional[str] = None
+
+    def _load(self):
+        if self._engine is None and self._load_error is None:
+            try:
+                from src.engine import get_engine
+                self._engine = get_engine()
+            except Exception as exc:
+                self._load_error = f"Could not load the RAG pipeline: {exc}"
+        return self._engine
+
+    def health(self) -> SystemStatus:
+        engine = self._load()
+        if engine is None:
+            return SystemStatus(mode="live", api=False, error=self._load_error)
+        try:
+            data = engine.status()
+        except Exception as exc:
+            return SystemStatus(mode="live", api=False, error=str(exc)[:300])
+        # api=True means "the pipeline is loaded in this process"; pinecone/llm carry the live
+        # checks, so a bad key shows as DEGRADED with a reason rather than a bare OFFLINE.
+        errors = data.get("errors") or {}
+        return SystemStatus(
+            mode="live", api=True,
+            pinecone=data.get("pinecone"), llm=data.get("llm"),
+            error="; ".join(f"{k}: {v}" for k, v in errors.items()) or None,
+        )
+
+    def kb_info(self) -> Optional[KBInfo]:
+        engine = self._load()
+        if engine is None:
+            return None
+        try:
+            return KBInfo.from_api(engine.kb_info())
+        except Exception:
+            return None
+
+    def ask(self, query: str) -> RAGResponse:
+        engine = self._load()
+        if engine is None:
+            raise APIError(self._load_error or "The RAG pipeline is unavailable.")
+        from src.engine import EngineError
+        try:
+            return RAGResponse.from_api(engine.ask(query))
+        except EngineError as exc:
+            raise APIError(exc.message, hint=exc.hint or _hint_for(exc.kind)) from exc
+
+    def stream(self, query: str) -> Iterator[dict]:
+        engine = self._load()
+        if engine is None:
+            raise APIError(self._load_error or "The RAG pipeline is unavailable.",
+                           hint="Check that the deployment installed every package in requirements.txt.")
+        started = time.perf_counter()
+        for event in engine.stream(query):
+            if event.get("type") == "error":
+                raise APIError("The RAG pipeline failed.", hint=_detail_hint(event))
+            if event.get("type") == "result":
+                data = event["data"]
+                data.setdefault("latency", round(time.perf_counter() - started, 2))
+                yield {"type": "result", "response": RAGResponse.from_api(data)}
+                return
+            yield event
+        raise APIError("The pipeline ended before a result arrived.",
+                       hint="Check the Streamlit Cloud logs for this app.")
 
 
 # ---------------------------------------------------------------------------
@@ -171,6 +283,19 @@ class MockRAGClient:
 
 
 def get_client() -> RAGClient:
+    """Pick a client from the environment.
+
+        RAG_API_MODE=mock   -> MockRAGClient        (sample data, clearly labelled)
+        RAG_API_URL set     -> HttpRAGClient        (a uvicorn backend is running somewhere)
+        neither             -> InProcessRAGClient   (run the pipeline here)
+
+    Defaulting to in-process rather than to 127.0.0.1:8000 is what makes the Streamlit Cloud
+    deployment work: there is no second process there to connect to. Locally, put
+    RAG_API_URL=http://127.0.0.1:8000 in .env to go back through FastAPI.
+    """
     if os.getenv("RAG_API_MODE", "live").lower() == "mock":
         return MockRAGClient()
-    return HttpRAGClient(os.getenv("RAG_API_URL", DEFAULT_API_URL))
+    api_url = (os.getenv("RAG_API_URL") or "").strip()
+    if api_url:
+        return HttpRAGClient(api_url)
+    return InProcessRAGClient()

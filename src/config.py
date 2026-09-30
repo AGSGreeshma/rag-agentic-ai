@@ -1,10 +1,43 @@
 """Central configuration: environment variables, paths, model names and tuning constants."""
 import os
+import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
 
 load_dotenv()
+
+# --- Secrets: .env locally, Streamlit Secrets when deployed ---
+# .env is gitignored, so it does not exist on Streamlit Community Cloud; there the keys come from
+# the app's Settings -> Secrets panel instead. Copy anything found there into os.environ *before*
+# the constants below are read: langchain-openai and langchain-pinecone build their own clients
+# straight from the environment, so setting only the module-level names would not be enough.
+SECRET_KEYS = ("OPENAI_API_KEY", "PINECONE_API_KEY", "PINECONE_INDEX_NAME",
+               "RAG_API_URL", "RAG_API_MODE")
+
+
+def _load_streamlit_secrets() -> None:
+    """Fill in missing env vars from st.secrets. A no-op outside a Streamlit process.
+
+    Only consulted when streamlit is already imported - under uvicorn or pytest it never is, and
+    importing it there would cost a second of startup to read secrets that .env already supplied.
+    Real env vars and .env win over st.secrets, so a local override still takes effect.
+    """
+    st = sys.modules.get("streamlit")
+    if st is None:
+        return
+    for key in SECRET_KEYS:
+        if os.environ.get(key):
+            continue
+        try:
+            value = st.secrets[key]
+        except Exception:
+            continue  # no secrets.toml configured, or this key is not in it
+        if value:
+            os.environ[key] = str(value)
+
+
+_load_streamlit_secrets()
 
 # --- Paths ---
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -50,4 +83,7 @@ def validate():
         "PINECONE_API_KEY": PINECONE_API_KEY,
     }.items() if not v]
     if missing:
-        raise EnvironmentError(f"Missing env vars: {', '.join(missing)}. Check your .env file.")
+        raise EnvironmentError(
+            f"Missing env vars: {', '.join(missing)}. Set them in .env locally, or in "
+            "Streamlit Cloud under Settings -> Secrets when deployed."
+        )
