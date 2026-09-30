@@ -241,26 +241,42 @@ def build_rag_graph():
 
 
 # ---------------------------------------------------------------------------
-# Public helper: run a query and shape the response
+# Public helpers: starting state, response shaping, one-shot query
 # ---------------------------------------------------------------------------
-def run_query(graph, question: str) -> dict:
-    """Invoke the graph and shape the output into the required response format."""
-    result = graph.invoke({
+def initial_state(question: str) -> dict:
+    """The starting state for one question."""
+    return {
         "question": question, "search_queries": [], "rewrites": 0,
         "chunks": [], "answer": "",
         "grounding_score": 0.0, "confidence_score": 0.0, "attempts": 0,
-    })
+    }
+
+
+def format_result(question: str, state: dict) -> dict:
+    """Shape the final graph state into the API response.
+    The first four keys are the required assignment format; the rest add transparency."""
+    relevant = [c for c in state["chunks"] if c["relevant"]]
+    refused = is_refusal(state["answer"])
+    retrieval = round(sum(c["similarity"] for c in relevant) / len(relevant), 4) if relevant else None
     return {
         "query": question,
-        "final_answer": result["answer"],
-        "retrieved_context_chunks": [c["text"] for c in result["chunks"]],
-        "confidence_score": result["confidence_score"],
+        "final_answer": state["answer"],
+        "retrieved_context_chunks": [c["text"] for c in state["chunks"]],
+        "confidence_score": state["confidence_score"],
         "sources": [
             {"page": c["page"], "similarity": c["similarity"], "used_in_answer": c["relevant"]}
-            for c in result["chunks"]
+            for c in state["chunks"]
         ],
-        "rewritten_queries": result["search_queries"],
+        "rewritten_queries": state["search_queries"],
+        "out_of_scope": refused,
+        "grounding_score": None if refused else round(state["grounding_score"], 2),
+        "retrieval_score": None if refused else retrieval,
     }
+
+
+def run_query(graph, question: str) -> dict:
+    """Invoke the graph and shape the output into the required response format."""
+    return format_result(question, graph.invoke(initial_state(question)))
 
 
 if __name__ == "__main__":
