@@ -268,22 +268,24 @@ Full outputs are saved to `results/sample_query_results.json`.
 
 Full outputs: [`results/sample_query_results.json`](results/sample_query_results.json). Run `python tests_sample_queries.py` to reproduce.
 
-| # | Query | Expected | Result | Confidence | Time | Notes |
-|---|---|---|---|---|---|---|
-| 1 | What is the core definition of Agentic AI as outlined in the eBook? | Answer | ✅ Pass | 0.87 | 6.3 s | |
-| 2 | What are the main architectural components required to build agentic systems? | Answer | ✅ Pass | 0.85 | 6.1 s | |
-| 3 | What real-world industry use cases for Agentic AI are discussed in the eBook? | Answer | ✅ Pass | 0.87 | 4.5 s | |
-| 4 | How does Agentic AI differ from traditional generative AI chatbots according to the text? | Answer | ✅ Pass | 0.85 | 5.1 s | |
-| 5 | What key challenges or limitations of Agentic AI are mentioned in the document? | Answer | ✅ Pass | 0.82 | 8.5 s | Multi-query rewrite triggered |
-| 6 | What is the capital of France? | Refuse | ✅ Refused | 0.00 | 0.6 s | No LLM call |
-| 7 | What role does memory play in Agentic AI workflows? | Answer | ✅ Pass | 0.84 | 3.9 s | |
-| 8 | Who won the 2022 FIFA World Cup? | Refuse | ✅ Refused | 0.00 | 0.6 s | No LLM call |
+| # | Query | Expected | Result | Confidence | Time |
+|---|---|---|---|---|---|
+| 1 | What is the core definition of Agentic AI as outlined in the eBook? | Answer | ✅ Pass | 0.87 | 10.5 s |
+| 2 | What are the main architectural components required to build agentic systems? | Answer | ✅ Pass | 0.85 | 7.2 s |
+| 3 | What real-world industry use cases for Agentic AI are discussed in the eBook? | Answer | ✅ Pass | 0.87 | 4.8 s |
+| 4 | How does Agentic AI differ from traditional generative AI chatbots according to the text? | Answer | ✅ Pass | 0.85 | 5.1 s |
+| 5 | What key challenges or limitations of Agentic AI are mentioned in the document? | Answer | ✅ Pass | 0.85 | 11.7 s |
+| 6 | What is the capital of France? | Refuse | ✅ Refused | 0.00 | 1.0 s |
+| 7 | What role does memory play in Agentic AI workflows? | Answer | ✅ Pass | 0.84 | 4.1 s |
+| 8 | Who won the 2022 FIFA World Cup? | Refuse | ✅ Refused | 0.00 | 0.6 s |
 
 **8/8 passed.** Each in-scope answer was also checked automatically: not refused, confidence ≥ 0.5, page citations present,
 and every cited page was actually among the retrieved chunks.
 
 Out-of-scope questions reach at most ~0.07–0.10 cosine similarity against the eBook (vs. ~0.61–0.73 for in-scope questions),
-so they are refused at the similarity floor in under a second, **without any LLM call**.
+so they are refused at the similarity floor in about a second, **without any LLM call**.
+
+Confidence scores are stable between runs; response times vary with OpenAI API latency.
 
 ---
 
