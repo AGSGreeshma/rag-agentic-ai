@@ -8,7 +8,7 @@ Questions outside the eBook's scope are refused.
 
 **Highlights**
 - Stateful **LangGraph** workflow with relevance grading, a **multi-query rewrite loop**, and a **hallucination (grounding) check**
-- **Confidence score** computed from retrieval similarity + LLM groundedness — not a fixed heuristic
+- **Confidence score** computed from retrieval similarity + LLM groundedness, not a fixed heuristic
 - Page-number metadata on every chunk; answers cite pages, and tests verify every cited page was actually retrieved
 - **FastAPI** endpoint and **Streamlit** UI, both returning `final_answer`, `retrieved_context_chunks`, and `confidence_score`
 - Automated test script with 8 queries (6 in-scope, 2 out-of-scope) — **8/8 passing**
@@ -70,8 +70,10 @@ confidence = 0.4 × mean cosine similarity of the relevant chunks
 
 ### 4. Interfaces
 - `app.py` — FastAPI `POST /chat` (graph built once at startup; sync endpoint so blocking LLM calls run in a worker thread)
-- `streamlit_app.py` — chat UI with confidence score and retrieved chunks (page, similarity, used/not used) in the sidebar
-
+- `streamlit_app.py` + `ui/` — chat-style research assistant (light pastel theme). Each answer shows a
+  groundedness chip, its source passages (page + match score) and a live view of the LangGraph pipeline,
+  streamed node-by-node from `GET /chat/stream`. The sidebar shows knowledge-base stats and live system
+  status from `/kb/info` and `/health`. See `UI_SETUP.md` for the frontend architecture.
 ---
 
 ## Project structure
@@ -85,20 +87,30 @@ rag-agentic-ai/
 │   ├── config.py                     # Env vars, paths, model names, tuning constants
 │   ├── ingestion.py                  # PDF → chunks → embeddings → Pinecone
 │   └── graph.py                      # LangGraph workflow + run_query helper
+├── ui/                               # Streamlit frontend (talks to the API only)
+│   ├── __init__.py
+│   ├── api_client.py                 # API service layer: live FastAPI client + mock client
+│   ├── models.py                     # Typed response models (RAGResponse, Source, KBInfo, SystemStatus)
+│   ├── pipeline.py                   # Maps LangGraph node events to UI pipeline steps
+│   ├── html.py                       # Pure HTML builders for every component
+│   ├── components.py                 # Streamlit components: header, welcome, chat turns, sidebar
+│   └── theme.py                      # Design tokens and CSS (light pastel, Instrument Serif)
 ├── scripts/
 │   ├── check_pdf.py                  # Verifies the PDF has extractable text (not scanned)
 │   ├── find_in_pdf.py                # Lists pages mentioning given keywords
 │   └── debug_retrieval.py            # Compares Pinecone results across query phrasings
 ├── results/
 │   └── sample_query_results.json     # Full output of the test run
-├── app.py                            # FastAPI application
-├── streamlit_app.py                  # Streamlit UI
+├── .streamlit/
+│   └── config.toml                   # UI base theme
+├── app.py                            # FastAPI application (/chat, /chat/stream, /health, /kb/info)
+├── streamlit_app.py                  # Streamlit UI entry point (chat-thread layout)
 ├── tests_sample_queries.py           # 8 validation queries with automatic checks
+├── UI_SETUP.md                       # Frontend architecture and run guide
 ├── requirements.txt
 ├── .env.example
 └── README.md
 ```
-
 ---
 
 ## Setup
@@ -122,7 +134,7 @@ pip install -r requirements.txt
 Create a `.env` file from the template and add your keys:
 
 ```bash
-cp .env.example .env        # Windows: Copy-Item .env.example .env
+cp .env.example .env        
 ```
 
 ```
@@ -171,6 +183,13 @@ uvicorn app:app --reload
 
 Interactive docs: http://127.0.0.1:8000/docs
 
+| Endpoint | Purpose |
+|---|---|
+| `POST /chat` | Assignment response format plus page/similarity metadata |
+| `GET /chat/stream?query=...` | Same pipeline streamed as Server-Sent Events: one event per LangGraph node, then the final result (used by the UI) |
+| `GET /health` | Live checks: Pinecone reachable, OpenAI key valid (cached 30 s) |
+| `GET /kb/info` | Knowledge-base metadata: pages, chunk count, index name, models |
+
 ```bash
 curl -X POST http://127.0.0.1:8000/chat \
   -H "Content-Type: application/json" \
@@ -183,7 +202,12 @@ Invoke-RestMethod -Uri http://127.0.0.1:8000/chat -Method Post -ContentType "app
   -Body '{"query": "What role does memory play in Agentic AI workflows?"}' | ConvertTo-Json -Depth 5
 ```
 
-**Response format:**
+Watch the pipeline run node by node:
+```bash
+curl -N "http://127.0.0.1:8000/chat/stream?query=What%20is%20Agentic%20AI%3F"
+```
+
+**Response format (`POST /chat`):**
 ```json
 {
   "query": "What is Agentic AI according to the eBook?",
@@ -194,17 +218,36 @@ Invoke-RestMethod -Uri http://127.0.0.1:8000/chat -Method Post -ContentType "app
     {"page": 7, "similarity": 0.7336, "used_in_answer": true},
     {"page": 11, "similarity": 0.7104, "used_in_answer": true}
   ],
-  "rewritten_queries": []
+  "rewritten_queries": [],
+  "out_of_scope": false,
+  "grounding_score": 1.0,
+  "retrieval_score": 0.71
 }
 ```
 
-`sources` and `rewritten_queries` are extra fields for transparency. `rewritten_queries` is empty unless the rewrite loop ran.
+The first four fields are the required assignment format. The rest are extra fields for transparency:
+
+| Field | Meaning |
+|---|---|
+| `sources` | Page number, cosine similarity and whether each retrieved chunk was used in the answer (same order as `retrieved_context_chunks`) |
+| `rewritten_queries` | The alternative search queries, if the multi-query rewrite loop ran (otherwise empty) |
+| `out_of_scope` | `true` when the question isn't covered by the eBook and the assistant refused |
+| `grounding_score` | LLM hallucination check: how well the answer is supported by the chunks (0–1); `null` on refusals |
+| `retrieval_score` | Mean similarity of the chunks used in the answer; `null` on refusals |
+
+`confidence_score = 0.4 × retrieval_score + 0.6 × grounding_score`, and it is always `0.0` for refusals.
 
 ### 4. Run the Streamlit UI
 
+The UI talks to the API, so start the backend first (terminal 1), then the UI (terminal 2):
+
 ```bash
+uvicorn app:app --reload
 streamlit run streamlit_app.py
 ```
+
+To preview the UI without the backend: `RAG_API_MODE=mock streamlit run streamlit_app.py`
+(sample data, clearly labelled as mock).
 
 ### 5. Run the validation tests
 
@@ -223,18 +266,23 @@ Full outputs are saved to `results/sample_query_results.json`.
 
 ## Test results
 
-| # | Query | Expected | Result | Confidence |
-|---|---|---|---|---|
-| 1 | What is the core definition of Agentic AI as outlined in the eBook? | Answer | ✅ Pass | 0.87 |
-| 2 | What are the main architectural components required to build agentic systems? | Answer | ✅ Pass | 0.85 |
-| 3 | What real-world industry use cases for Agentic AI are discussed in the eBook? | Answer | ✅ Pass | 0.87 |
-| 4 | How does Agentic AI differ from traditional generative AI chatbots according to the text? | Answer | ✅ Pass | 0.85 |
-| 5 | What key challenges or limitations of Agentic AI are mentioned in the document? | Answer | ✅ Pass | 0.85 |
-| 6 | What is the capital of France? | Refuse | ✅ Refused | 0.00 |
-| 7 | What role does memory play in Agentic AI workflows? | Answer | ✅ Pass | 0.84 |
-| 8 | Who won the 2022 FIFA World Cup? | Refuse | ✅ Refused | 0.00 |
+Full outputs: [`results/sample_query_results.json`](results/sample_query_results.json). Run `python tests_sample_queries.py` to reproduce.
 
-Out-of-scope questions score ~0.07 cosine similarity against the eBook (vs. ~0.65–0.73 for in-scope questions),
+| # | Query | Expected | Result | Confidence | Time | Notes |
+|---|---|---|---|---|---|---|
+| 1 | What is the core definition of Agentic AI as outlined in the eBook? | Answer | ✅ Pass | 0.87 | 6.3 s | |
+| 2 | What are the main architectural components required to build agentic systems? | Answer | ✅ Pass | 0.85 | 6.1 s | |
+| 3 | What real-world industry use cases for Agentic AI are discussed in the eBook? | Answer | ✅ Pass | 0.87 | 4.5 s | |
+| 4 | How does Agentic AI differ from traditional generative AI chatbots according to the text? | Answer | ✅ Pass | 0.85 | 5.1 s | |
+| 5 | What key challenges or limitations of Agentic AI are mentioned in the document? | Answer | ✅ Pass | 0.82 | 8.5 s | Multi-query rewrite triggered |
+| 6 | What is the capital of France? | Refuse | ✅ Refused | 0.00 | 0.6 s | No LLM call |
+| 7 | What role does memory play in Agentic AI workflows? | Answer | ✅ Pass | 0.84 | 3.9 s | |
+| 8 | Who won the 2022 FIFA World Cup? | Refuse | ✅ Refused | 0.00 | 0.6 s | No LLM call |
+
+**8/8 passed.** Each in-scope answer was also checked automatically: not refused, confidence ≥ 0.5, page citations present,
+and every cited page was actually among the retrieved chunks.
+
+Out-of-scope questions reach at most ~0.07–0.10 cosine similarity against the eBook (vs. ~0.61–0.73 for in-scope questions),
 so they are refused at the similarity floor in under a second, **without any LLM call**.
 
 ---
