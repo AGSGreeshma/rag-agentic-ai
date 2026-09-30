@@ -34,14 +34,14 @@ Ebook-Agentic-AI.pdf (60 pages)
 flowchart TD
     S([START]) --> R[retrieve]
     R --> G[grade_documents]
-    G -- "≥ 2 relevant chunks" --> GEN[generate]
-    G -- "< 2 relevant, not yet rewritten" --> RW[rewrite_query]
-    RW -- "3 alternative queries" --> R
-    G -- "nothing on-topic, or no relevant chunks after rewrite" --> REF[refuse]
+    G -- "≥ 2 relevant<br/>chunks" --> GEN[generate]
+    G -- "< 2 relevant<br/>(first pass)" --> RW[rewrite_query]
+    RW -- "3 new<br/>queries" --> R
+    G -- "off-topic or<br/>none relevant" --> REF[refuse]
     GEN --> CG[check_grounding]
-    CG -- "grounding ≥ 0.7" --> F[finalize]
-    CG -- "grounding < 0.7, first attempt" --> GEN
-    CG -- "model refused, or still ungrounded" --> REF
+    CG -- "grounding<br/>≥ 0.7" --> F[finalize]
+    CG -- "retry<br/>once" --> GEN
+    CG -- "refused or<br/>ungrounded" --> REF
     F --> E([END])
     REF --> E
 ```
