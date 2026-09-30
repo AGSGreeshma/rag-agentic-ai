@@ -15,7 +15,7 @@ import time
 import urllib.request
 from pathlib import Path
 
-from src.graph import build_rag_graph, is_refusal, run_query
+from src.graph import build_rag_graph, run_query
 
 API_URL = "http://127.0.0.1:8000/chat"
 RESULTS_PATH = Path(__file__).parent / "results" / "sample_query_results.json"
@@ -49,7 +49,8 @@ def ask_api(query: str) -> dict:
 def check(case: dict, result: dict) -> list[str]:
     """Return a list of problems (empty list = pass)."""
     problems = []
-    refused = is_refusal(result["final_answer"])
+    # The pipeline records the refusal itself; trust that over re-matching the answer text.
+    refused = result["out_of_scope"]
     confidence = result["confidence_score"]
 
     if case["in_scope"]:

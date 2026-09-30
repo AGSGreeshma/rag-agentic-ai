@@ -132,7 +132,7 @@ class MockRAGClient:
     def stream(self, query: str) -> Iterator[dict]:
         in_scope = any(w in query.lower() for w in self._IN_SCOPE_WORDS)
         steps = [("retrieve", "5 chunks"), ("grade_documents", "3 relevant" if in_scope else "0 relevant")]
-        steps += [("generate", ""), ("check_grounding", "grounding 1.00"), ("finalize", "confidence 0.86")] \
+        steps += [("generate", ""), ("check_grounding", "grounding 0.75"), ("finalize", "confidence 0.69")] \
             if in_scope else [("refuse", "")]
         for node, detail in steps:
             yield {"type": "start", "node": node}
@@ -154,14 +154,16 @@ class MockRAGClient:
                 if in_scope else "I cannot answer this based on the provided document."
             ),
             "retrieved_context_chunks": chunks,
-            "confidence_score": 0.86 if in_scope else 0.0,
+            "confidence_score": 0.69 if in_scope else 0.0,
             "sources": [
                 {"page": 7, "similarity": 0.73, "used_in_answer": in_scope},
                 {"page": 19, "similarity": 0.69, "used_in_answer": in_scope},
                 {"page": 42, "similarity": 0.07 if not in_scope else 0.41, "used_in_answer": False},
             ],
             "out_of_scope": not in_scope,
-            "grounding_score": 1.0 if in_scope else None,
+            # Deliberately not 1.0: claim-level grounding rarely saturates, and a preview that always
+            # showed a perfect score would never exercise the partial-grounding styling.
+            "grounding_score": 0.75 if in_scope else None,
             "retrieval_score": 0.71 if in_scope else None,
             "latency": 2.5,
         }

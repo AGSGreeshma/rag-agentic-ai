@@ -11,6 +11,7 @@ Endpoints
     GET  /kb/info       -> knowledge-base metadata (pages, chunks, models)
 """
 import json
+import logging
 import time
 from contextlib import asynccontextmanager
 from typing import Optional
@@ -28,6 +29,8 @@ from src.graph import build_rag_graph, format_result, initial_state, run_query
 NODE_NAMES = {"retrieve", "grade_documents", "rewrite_query", "generate",
               "check_grounding", "finalize", "refuse"}
 HEALTH_TTL_SECONDS = 30
+
+log = logging.getLogger("uvicorn.error")
 
 
 # --- Schemas ---
@@ -161,14 +164,19 @@ def _describe(node: str, state: dict) -> str:
 
 
 def _task_started(chunk) -> Optional[str]:
-    """Extract the node name from a LangGraph 'debug' task-start event (if the version emits them)."""
-    try:
-        if isinstance(chunk, dict) and chunk.get("type") == "task":
-            name = chunk.get("payload", {}).get("name")
-            return name if name in NODE_NAMES else None
-    except Exception:
-        pass
-    return None
+    """Extract the node name from a LangGraph 'debug' task-start event.
+
+    The debug payload shape is not part of LangGraph's stable API, so a version bump can change it.
+    Warn rather than swallow: otherwise the UI's pipeline view just silently stops populating."""
+    if not isinstance(chunk, dict) or chunk.get("type") != "task":
+        return None
+    payload = chunk.get("payload")
+    if not isinstance(payload, dict):
+        log.warning("LangGraph debug task event had no payload dict (keys=%s); "
+                    "pipeline view will not show node starts.", sorted(chunk))
+        return None
+    name = payload.get("name")
+    return name if name in NODE_NAMES else None
 
 
 @app.get("/chat/stream")

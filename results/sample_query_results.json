@@ -44,11 +44,11 @@
     "expected_in_scope": true,
     "status": "PASS",
     "problems": [],
-    "latency_seconds": 10.47
+    "latency_seconds": 7.2
   },
   {
     "query": "What are the main architectural components required to build agentic systems?",
-    "final_answer": "The main architectural components required to build agentic systems include:\n\n- **Decision-Making Layer**: Employs algorithms to analyze data and make informed decisions, incorporating elements like machine learning and rule-based reasoning (p. 32).\n- **Planning Layer**: Develops strategies to achieve complex goals, predicting outcomes and sequencing actions (p. 32).\n- **Key Components**: Perception, Reasoning, Planning, Learning, and Execution (p. 17).\n- **Agent**: The entity that interacts with the environment (p. 20).\n- **Environment**: The external world the agent interacts with (p. 20).\n- **Goals**: The desired outcomes driving the agent's actions (p. 20).",
+    "final_answer": "The main architectural components required to build agentic systems include:\n\n- **Decision-Making Layer**: Utilizes algorithms to analyze data and make informed decisions, incorporating elements like machine learning and rule-based reasoning (p. 32).\n- **Planning Layer**: Develops strategies to achieve complex goals, predicting outcomes and sequencing actions (p. 32).\n- **Key Components**: Perception, Reasoning, Planning, Learning, and Execution (p. 17).\n- **Agent**: The entity that interacts with the environment (p. 20).\n- **Environment**: The external world the agent interacts with (p. 20).\n- **Goals**: The desired outcomes driving the agent’s actions (p. 20).",
     "retrieved_context_chunks": [
       "2.2 Understanding the Building Blocks\nAt the heart of every Agentic AI system lies a delicate interplay of key elements: \nThe interaction between the agent, its environment, and its actions forms the \nfoundation of agentic AI. The environment can be static or dynamic, and the agent \ncan be reactive (responding to immediate stimuli) or proactive (planning for future \noutcomes). The agent’s use of memory and learning from interactions enables \ncontinuous improvement, leading to more effective and adaptive decision-making. \nAs we progress, we will see how different decision-making models influence how \nthese components work together. \nEffectors\nSensors\nGoals: The desired outcomes \ndriving the agent’s actions. \nEnvironment: The \nexternal world the agent \ninteracts with. \nAgent: The entity",
       "In this section, we explore the core components of agentic AI, explaining \nhow they work together to enable autonomous decision-making and \naction, on what they are classified. How do agents perceive and interact \nwith their environment? What drives their decisions? How can they adapt \nand learn over time? Here we cover the following topics: \n � The Building Blocks of Agentic AI \n � Key Components: Perception, Reasoning, Planning, Learning, \n and Execution \n � Types and Categories of Agents \n � Applications Across Industries \nANATOMY OF \nAN AGENTIC AI \nSYSTEM\n11",
@@ -91,7 +91,7 @@
     "expected_in_scope": true,
     "status": "PASS",
     "problems": [],
-    "latency_seconds": 7.15
+    "latency_seconds": 8.18
   },
   {
     "query": "What real-world industry use cases for Agentic AI are discussed in the eBook?",
@@ -138,7 +138,7 @@
     "expected_in_scope": true,
     "status": "PASS",
     "problems": [],
-    "latency_seconds": 4.81
+    "latency_seconds": 5.68
   },
   {
     "query": "How does Agentic AI differ from traditional generative AI chatbots according to the text?",
@@ -185,11 +185,11 @@
     "expected_in_scope": true,
     "status": "PASS",
     "problems": [],
-    "latency_seconds": 5.12
+    "latency_seconds": 4.29
   },
   {
     "query": "What key challenges or limitations of Agentic AI are mentioned in the document?",
-    "final_answer": "Key challenges or limitations of Agentic AI mentioned in the document include:\n\n- **Complex System Design**: Difficulties in designing due to inter-agent communication and dependencies (p. 36).\n- **Interoperability**: Challenges in integrating agents with existing systems (p. 36).\n- **Data Security**: Vulnerability of sensitive data shared between agents and external vendors (p. 36).\n- **Conflict Resolution**: Competing priorities among agents leading to inefficiencies (p. 36).\n- **Scalability**: Strain on computational resources and increased latency when scaling agents for large systems (p. 36).\n- **Cost of Implementation**: High initial investment required for developing and deploying multi-agent systems (p. 36).\n- **Slow Development**: Challenges in the timely development of systems (p. 36).\n- **Reliability and Fault Tolerance**: Need for advanced mechanisms to maintain system reliability during partial failures (p. 40).\n- **Communication and Coordination**: Difficulties in ensuring seamless communication among diverse agents (p. 39).\n- **Conflict Management**: Need for effective automated mechanisms to resolve conflicts without human intervention (p. 39).",
+    "final_answer": "Key challenges or limitations of Agentic AI mentioned in the document include:\n\n- **Complex System Design**: Difficulties arise due to inter-agent communication and dependencies (p. 36).\n- **Interoperability**: Integrating agents with existing systems can be challenging (p. 36).\n- **Data Security**: Sensitive data shared between agents and external vendors can be vulnerable to breaches (p. 36).\n- **Conflict Resolution**: Competing priorities among agents can lead to inefficiencies (p. 36).\n- **Scalability**: Scaling agents for large systems can strain resources and increase latency (p. 36).\n- **Cost of Implementation**: High initial investment is required for developing and deploying multi-agent systems (p. 36).\n- **Reliability and Fault Tolerance**: Maintaining system reliability is critical, especially during partial failures (p. 40).\n- **Communication and Coordination**: Ensuring seamless communication among diverse agents can be difficult (p. 39).\n- **Conflict Management**: Autonomous operation of agents can lead to conflicts that require automated resolution mechanisms (p. 39).",
     "retrieved_context_chunks": [
       "This section dives into the essentials of bringing Agentic AI to life. We \nexplore the foundational elements that drive success, evaluate \nindustry-specific readiness, and outline strategies to overcome \nchallenges at every stage of adoption. \nFoundational elements to start implementing:\n � Data Readiness \n � Technological Infrastructure \n � Organizational Alignment and Strategy \n � Skilled Workforce \n � Cultural and Ethical Preparedness \nYOUR READINESS \nFOR AGENTIC AI\n41",
       "3.4 Challenges and Mitigation Strategies of \nMulti-Agent Systems \nChallenge\nComplex \nSystem Design \nInteroperability \nData \nSecurity \nConflict \nResolution \nScalability \nCost of \nImplementation \nSlow \nDevelopment \nSophisticated \nOrchestration \nDescription\nCan become difficult to \ndesign due to inter-agent \ncommunication and \ndependencies. \nIntegrating agents with \nexisting ERP, WMS, and TMS \nsystems can be difficult. \nSensitive data shared \nbetween agents and \nexternal vendors can be \nvulnerable to breaches.\nAgents may have competing \npriorities (e.g., logistics vs. \ninventory) leading \nto inefficiencies. \nScaling agents for large \nsystems can strain \ncomputational resources and \nincrease latency. \nHigh initial investment in \ndeveloping and deploying \nmulti-agent systems.",
@@ -203,9 +203,10 @@
       "Goes beyond by acting autonomously \nto achieve goals (Impact-focused, \nproactive, and adaptive)\nOther AI systems\n \nProcesses data and follows \ninstructions (Output-focused, \nreactive, and static) \n05\nAGENTIC AI FOR EXECUTIVES",
       "Early Software Agents\nThese agents advanced tactical decision-making but lacked \nlong-term goals, focusing on isolated tasks within workflows. \nIntelligent Agents\nModern agents sense and act on their environment to pursue \nlong-term goals, influencing future states for continuous progress. \nAutonomous Agents\n12\n1990s Impact\nRevolutionized \ndistributed computing \nwith object-oriented \nparadigms and laid \nfoundation for modern \nmicroservices \n2000s Impact \nEnhanced workflow \nautomation and \nintroduced rule-based \ndecision systems in \nenterprise environments \nPresent \nImpact enabling \nself-driving systems, \nsmart assistants, and \nadaptive industrial \nautomation with \ncontinuous learning \nAGENTIC AI FOR EXECUTIVES",
       "complex to implement and requires collaboration within the community. \nConflict Management\n \n� Agents operate autonomously, which can lead to conflicts arising from overlapping \n objectives, competition for resources, or differing priorities. \n� Resolving these conflicts without human intervention requires effective \n automated mechanisms.\n� Choosing the Right Agent: When multiple agents with the desired capabilities are \n available, a selection process is needed to ensure the most suitable agent is \n chosen, based on context, efficiency, and resource availability. \nScalability\n \n� Orchestrating large-scale systems with hundreds or thousands of agents presents \n logistical challenges. \n� Robust infrastructure and efficient resource allocation algorithms are necessary to",
-      "without disrupting performance. \nReliability and Fault Tolerance\n \n� Maintaining system reliability is critical, particularly when dealing with \n partial failures. \n� A failure in one agent should not jeopardize the overall system's functionality or \n performance, necessitating advanced fault tolerance mechanisms.\nThese challenges highlight the complexity involved in orchestrating multi-agent \nsystems, requiring a careful balance of technical strategies and collaborative efforts.\n33\nAGENTIC AI FOR EXECUTIVES"
+      "without disrupting performance. \nReliability and Fault Tolerance\n \n� Maintaining system reliability is critical, particularly when dealing with \n partial failures. \n� A failure in one agent should not jeopardize the overall system's functionality or \n performance, necessitating advanced fault tolerance mechanisms.\nThese challenges highlight the complexity involved in orchestrating multi-agent \nsystems, requiring a careful balance of technical strategies and collaborative efforts.\n33\nAGENTIC AI FOR EXECUTIVES",
+      "integration, and ensure accurate task assignments by the orchestrator. \nPublish-Subscribe Models\n \nEnable asynchronous \ncommunication, ideal for \nlarge-scale distributed systems.\nPoint-to-Point Messaging\n \nFacilitate direct message \nexchanges between agents for \ntargeted communication.\n34\nAGENTIC AI FOR EXECUTIVES\n4.1 Challenges of Orchestrating Complex \nAgentic Systems\nCommunication and Coordination \n� Ensuring seamless communication among diverse agents can be difficult due to \n differences in functionality and sophistication. \n� Interoperability issues arise when agents are designed with varying \n technologies or standards. \n� Developing a uniform protocol for interaction is often essential, but it can be \n complex to implement and requires collaboration within the community."
     ],
-    "confidence_score": 0.85,
+    "confidence_score": 0.84,
     "sources": [
       {
         "page": 47,
@@ -214,12 +215,12 @@
       },
       {
         "page": 36,
-        "similarity": 0.6445,
+        "similarity": 0.6373,
         "used_in_answer": true
       },
       {
         "page": 40,
-        "similarity": 0.6224,
+        "similarity": 0.4469,
         "used_in_answer": true
       },
       {
@@ -229,7 +230,7 @@
       },
       {
         "page": 39,
-        "similarity": 0.6197,
+        "similarity": 0.6333,
         "used_in_answer": true
       },
       {
@@ -239,52 +240,57 @@
       },
       {
         "page": 12,
-        "similarity": 0.5634,
+        "similarity": 0.5617,
         "used_in_answer": false
       },
       {
         "page": 18,
-        "similarity": 0.5468,
+        "similarity": 0.5577,
         "used_in_answer": false
       },
       {
         "page": 9,
-        "similarity": 0.5402,
+        "similarity": 0.5538,
         "used_in_answer": false
       },
       {
         "page": 11,
-        "similarity": 0.5316,
+        "similarity": 0.5458,
         "used_in_answer": false
       },
       {
         "page": 18,
-        "similarity": 0.5267,
+        "similarity": 0.5412,
         "used_in_answer": false
       },
       {
         "page": 40,
-        "similarity": 0.6522,
+        "similarity": 0.6711,
         "used_in_answer": true
       },
       {
         "page": 39,
-        "similarity": 0.6412,
+        "similarity": 0.6507,
+        "used_in_answer": false
+      },
+      {
+        "page": 40,
+        "similarity": 0.6259,
         "used_in_answer": false
       }
     ],
     "rewritten_queries": [
       "challenges, risks, limitations, ethical concerns, operational barriers",
-      "Key challenges and limitations of autonomous intelligent systems",
-      "obstacles organizations encounter when integrating intelligent agents into their operations"
+      "Key Challenges and Limitations of Autonomous Intelligent Systems",
+      "obstacles organizations encounter when integrating intelligent autonomous agents"
     ],
     "out_of_scope": false,
     "grounding_score": 1.0,
-    "retrieval_score": 0.6347,
+    "retrieval_score": 0.5971,
     "expected_in_scope": true,
     "status": "PASS",
     "problems": [],
-    "latency_seconds": 11.65
+    "latency_seconds": 10.57
   },
   {
     "query": "What is the capital of France?",
@@ -331,7 +337,7 @@
     "expected_in_scope": false,
     "status": "PASS",
     "problems": [],
-    "latency_seconds": 1.02
+    "latency_seconds": 0.88
   },
   {
     "query": "What role does memory play in Agentic AI workflows?",
@@ -343,7 +349,7 @@
       "Clarity is key! Knowing what each type can do makes it a lot easier to use AI \neffectively and think about the solutions that work for you.\nRobotic Process Automation (RPA) and Agentic AI \nRPA excels at repetitive, rule-based tasks with structured data, like following a strict \nrecipe. Agentic AI adapts to different situations, handling unstructured inputs, much \nlike a chef improvising with available ingredients. \nLLMs vs. Agentic AI: Distinct Roles, Complementary Strengths \nAgents are more than LLMs. While LLMs are powerful tools for processing and \ngenerating human-like text, agents are goal-driven systems capable of performing \nactions autonomously in a dynamic environment. \nType Definition Capabilities Type Definition Capabilities \nTraditional AI\nNon-agentic AI \nAgentic AI",
       "and agency. \nAgentic AI: Represents this \nconcept by allowing systems to \nlearn from data, adapt, and make \nautonomous decisions. \nJean Piaget’s Cognitive \nDevelopment Theory: Intelligence \nevolves through distinct stages, \nshaped by experiences and \ninteractions with the environment. \n \nAgentic AI: Mirrors these stages, \nprogressively enhancing its \nlearning and adapting to complex \ntasks over time.\n20\nAGENTIC AI FOR EXECUTIVES"
     ],
-    "confidence_score": 0.84,
+    "confidence_score": 0.69,
     "sources": [
       {
         "page": 18,
@@ -373,12 +379,12 @@
     ],
     "rewritten_queries": [],
     "out_of_scope": false,
-    "grounding_score": 1.0,
+    "grounding_score": 0.75,
     "retrieval_score": 0.6014,
     "expected_in_scope": true,
     "status": "PASS",
     "problems": [],
-    "latency_seconds": 4.12
+    "latency_seconds": 3.98
   },
   {
     "query": "Who won the 2022 FIFA World Cup?",
@@ -425,6 +431,6 @@
     "expected_in_scope": false,
     "status": "PASS",
     "problems": [],
-    "latency_seconds": 0.61
+    "latency_seconds": 0.56
   }
 ]

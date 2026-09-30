@@ -8,10 +8,13 @@ Questions outside the eBook's scope are refused.
 
 **Highlights**
 - Stateful **LangGraph** workflow with relevance grading, a **multi-query rewrite loop**, and a **hallucination (grounding) check**
-- **Confidence score** computed from retrieval similarity + LLM groundedness, not a fixed heuristic
+- **Confidence score** from retrieval similarity + a **claim-level groundedness audit**: the grader
+  enumerates each claim the answer makes and grades it against the context, and the score is computed
+  in Python from those verdicts
 - Page-number metadata on every chunk; answers cite pages, and tests verify every cited page was actually retrieved
 - **FastAPI** endpoint and **Streamlit** UI, both returning `final_answer`, `retrieved_context_chunks`, and `confidence_score`
 - Automated test script with 8 queries (6 in-scope, 2 out-of-scope) - **8/8 passing**
+- **35 unit tests** covering the routing and scoring logic, run offline with no API keys and no cost
 
 ---
 
@@ -52,7 +55,7 @@ flowchart TD
 | `grade_documents` | Drops chunks below a cosine-similarity floor (0.25), then an LLM grader (structured output) marks which remaining chunks actually help answer the question. |
 | `rewrite_query` | If fewer than 2 relevant chunks were found, the LLM writes 3 alternative queries (keywords + synonyms, section-heading phrasing, implementation angle) and retrieval runs again. Runs at most once. |
 | `generate` | Answers using **only** the relevant chunks, citing pages. Refuses with a fixed message if the context has nothing relevant. |
-| `check_grounding` | A second LLM call scores (0–1) how well the answer is supported by the context, the hallucination check. Low score → one retry with a stricter instruction. |
+| `check_grounding` | The hallucination check. A second LLM call breaks the answer into its individual claims and grades each one `supported` / `partial` / `unsupported` against the context; the score is their weighted share, computed in Python. Low score → one retry with a stricter instruction. |
 | `finalize` | Computes the confidence score. |
 | `refuse` | Returns the refusal message with confidence 0.0. |
 
@@ -60,13 +63,26 @@ flowchart TD
 
 ```
 confidence = 0.4 × mean cosine similarity of the relevant chunks
-           + 0.6 × LLM grounding score
+           + 0.6 × grounding score
 ```
 
 - **Retrieval similarity** measures how well the eBook covers the question.
 - **Grounding score** measures whether the answer actually sticks to the retrieved text.
 - Grounding gets the higher weight because it evaluates the answer itself.
 - Refusals always return **0.0**.
+
+The grounding score is **not** a number the LLM is asked for directly. Asking `gpt-4o-mini` to rate an
+answer it had just written returned `1.0` on every single in-scope query - the 0.6-weighted term was a
+constant, so confidence collapsed into a function of retrieval similarity alone. Instead the grader now
+enumerates the answer's claims and labels each one, and Python computes the score:
+
+```
+grounding = (1.0 × supported + 0.5 × partial + 0.0 × unsupported) / total claims
+```
+
+A model that will not criticise its own answer as a whole *will* mark an individual claim unsupported.
+No claims extracted scores `0.0` rather than `1.0`, so a grader that returns nothing fails closed into
+one stricter retry and then a refusal.
 
 ### 4. Interfaces
 - `app.py` — FastAPI `POST /chat` (graph built once at startup; sync endpoint so blocking LLM calls run in a worker thread)
@@ -95,6 +111,9 @@ rag-agentic-ai/
 │   ├── html.py                       # Pure HTML builders for every component
 │   ├── components.py                 # Streamlit components: header, welcome, chat turns, sidebar
 │   └── theme.py                      # Design tokens and CSS (light pastel, Instrument Serif)
+├── tests/
+│   ├── test_units.py                 # Offline unit tests: routing, scoring, response shaping
+│   └── test_grounding_live.py        # Opt-in: proves the grader can score a fabrication low
 ├── scripts/
 │   ├── check_pdf.py                  # Verifies the PDF has extractable text (not scanned)
 │   ├── find_in_pdf.py                # Lists pages mentioning given keywords
@@ -105,9 +124,11 @@ rag-agentic-ai/
 │   └── config.toml                   # UI base theme
 ├── app.py                            # FastAPI application (/chat, /chat/stream, /health, /kb/info)
 ├── streamlit_app.py                  # Streamlit UI entry point (chat-thread layout)
-├── tests_sample_queries.py           # 8 validation queries with automatic checks
+├── tests_sample_queries.py           # 8 validation queries with automatic checks (end-to-end)
+├── conftest.py                       # Puts the repo root on sys.path for pytest
 ├── UI_SETUP.md                       # Frontend architecture and run guide
-├── requirements.txt
+├── requirements.txt                  # Loose ranges, for reading
+├── requirements.lock.txt             # Exact pinned versions - install from this
 ├── .env.example
 └── README.md
 ```
@@ -128,8 +149,13 @@ venv\Scripts\Activate.ps1
 # macOS / Linux:
 source venv/bin/activate
 
-pip install -r requirements.txt
+pip install -r requirements.lock.txt
 ```
+
+`requirements.lock.txt` holds the exact versions this project was built and tested against
+(`langchain 1.4.3`, `langgraph 1.2.12`, `streamlit 1.64.0`, …). `requirements.txt` keeps the loose
+ranges for readability, but install from the lock file - LangGraph's streaming internals in particular
+are not a stable API, and the UI's live pipeline view depends on them.
 
 Create a `.env` file from the template and add your keys:
 
@@ -248,11 +274,28 @@ streamlit run streamlit_app.py
 
 To preview the UI without the backend: `RAG_API_MODE=mock streamlit run streamlit_app.py`
 
-### 5. Run the validation tests
+### 5. Run the tests
+
+Unit tests first - these are offline, instant and free. They need no API keys and make no network
+calls (the routing and scoring functions are pure functions of a state dict):
+
+```bash
+pytest tests/ -q                        # 35 tests, ~1.5 s
+```
+
+Then the end-to-end validation queries, which do call OpenAI and Pinecone:
 
 ```bash
 python tests_sample_queries.py          # calls the graph directly
 python tests_sample_queries.py --api    # calls the running FastAPI server
+```
+
+The live grounding regression test is opt-in, since it spends two OpenAI calls to confirm the grader
+still marks a fabricated statistic down:
+
+```bash
+RUN_LIVE_TESTS=1 pytest tests/test_grounding_live.py -q          # bash
+$env:RUN_LIVE_TESTS=1; pytest tests/test_grounding_live.py -q    # PowerShell
 ```
 
 Each query is checked automatically:
@@ -273,9 +316,9 @@ Full outputs: [`results/sample_query_results.json`](results/sample_query_results
 | 2 | What are the main architectural components required to build agentic systems? | Answer | ✅ Pass | 0.85 | 7.2 s |
 | 3 | What real-world industry use cases for Agentic AI are discussed in the eBook? | Answer | ✅ Pass | 0.87 | 4.8 s |
 | 4 | How does Agentic AI differ from traditional generative AI chatbots according to the text? | Answer | ✅ Pass | 0.85 | 5.1 s |
-| 5 | What key challenges or limitations of Agentic AI are mentioned in the document? | Answer | ✅ Pass | 0.85 | 11.7 s |
+| 5 | What key challenges or limitations of Agentic AI are mentioned in the document? | Answer | ✅ Pass | 0.84 | 10.6 s |
 | 6 | What is the capital of France? | Refuse | ✅ Refused | 0.00 | 1.0 s |
-| 7 | What role does memory play in Agentic AI workflows? | Answer | ✅ Pass | 0.84 | 4.1 s |
+| 7 | What role does memory play in Agentic AI workflows? | Answer | ✅ Pass | 0.69 | 4.0 s |
 | 8 | Who won the 2022 FIFA World Cup? | Refuse | ✅ Refused | 0.00 | 0.6 s |
 
 **8/8 passed.** Each in-scope answer was also checked automatically: not refused, confidence ≥ 0.5, page citations present,
@@ -285,6 +328,11 @@ Out-of-scope questions reach at most ~0.07–0.10 cosine similarity against the 
 so they are refused at the similarity floor in about a second, **without any LLM call**.
 
 Confidence scores are stable between runs; response times vary with OpenAI API latency.
+
+Query 7 is the one the claim-level grader marks down (grounding `0.75`, so confidence `0.69`): the eBook
+supports the claim that memory enables learning from interactions, but the answer generalises past what
+p. 20 actually states. Under the old single-float grader every in-scope query scored grounding `1.0` and
+confidence landed in a 0.84–0.87 band; the spread is now 0.69–0.87.
 
 ---
 
@@ -313,7 +361,19 @@ query initially failed: it was refused even though the eBook covers the topic. I
 against each other, since similarity scales differ between query styles), then graded again. The answer
 now lists 9 cited challenges with confidence 0.85. Clearly off-topic questions skip the rewrite.
 
-**4. Answer partial information instead of refusing.** The answer prompt originally refused unless the
+**4. The grounding score was saturated.** The first version of the hallucination check asked the LLM
+for a single 0–1 float. It returned `1.0` on all six in-scope queries, which meant the 0.6-weighted
+grounding term contributed no information at all and `confidence` reduced to `0.6 + 0.4 × retrieval` -
+every answer landing in 0.84–0.87. The cause is structural: `gpt-4o-mini` was grading an answer
+`gpt-4o-mini` had just written, against context selected *because* it supported that answer.
+
+**Fix:** make the grader enumerate rather than rate. It now lists the answer's individual claims and
+labels each `supported` / `partial` / `unsupported`, and Python computes the weighted share. The same
+model that would not score its own answer below 1.0 will readily mark one claim of four unsupported.
+`tests/test_grounding_live.py` guards this: an answer with a fabricated "43% cost saving" statistic must
+score below the 0.7 threshold.
+
+**5. Answer partial information instead of refusing.** The answer prompt originally refused unless the
 context fully answered the question; it now answers with what the context contains and refuses only
 when nothing relevant was found. The grounding check still guards against hallucination.
 
@@ -340,9 +400,17 @@ when nothing relevant was found. The grounding check still guards against halluc
 - **PDF extraction artifacts:** pypdf sometimes merges words across line breaks ("practicalapplications").
   Retrieval still works, but a layout-aware parser (e.g. PyMuPDF) could improve chunk quality.
 - **LLM-based grading** adds 1–2 extra LLM calls per question (~3–7 s total). A cross-encoder reranker
-  could replace the relevance grader for lower latency.
+  could replace the relevance grader for lower latency. Claim-level grounding also makes the grading
+  call's output longer than the answer it audits.
+- **The grader still shares a model with the generator.** Claim enumeration broke the saturation, but
+  `gpt-4o-mini` auditing `gpt-4o-mini` remains a weak check. A different model as grader, or a
+  cross-encoder over each claim, would be a genuinely independent one.
 - **Single-turn only:** no conversation memory; follow-up questions aren't resolved against earlier turns.
-- **Confidence weights** (0.4 / 0.6) were chosen by reasoning rather than calibrated on a labelled dataset.
+- **Confidence weights** (0.4 / 0.6) were chosen by reasoning rather than calibrated on a labelled
+  dataset, and with only 6 in-scope queries the score is not calibrated against human judgement -
+  it separates confident from shaky answers, but the absolute numbers carry no guarantee.
+- **No auth or rate limiting** on `/chat`, which makes 3–4 LLM calls per request. Fine locally; it
+  would need a throttle and a spend cap before being exposed publicly.
 - **Future:** hybrid search (BM25 + vectors), streaming responses, evaluation with RAGAS, Docker deployment.
 
 ---
