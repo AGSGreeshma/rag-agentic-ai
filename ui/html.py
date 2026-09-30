@@ -8,6 +8,7 @@ markdown parser would otherwise treat parts of the HTML as text or code.
 from __future__ import annotations
 
 import html
+import json
 import re
 from typing import Optional
 
@@ -284,11 +285,10 @@ def thinking_html(tracker: PipelineTracker) -> str:
 
 def _confidence_chip(resp: RAGResponse) -> str:
     if resp.out_of_scope:
-        return ('<span class="ara-chip conf oos" title="No passage in the eBook was relevant enough to answer from.">'
-                '<span class="ara-dot warn"></span>Groundedness: low</span>')
+        return ('<span class="ara-chip conf oos" title="Outside the knowledge base: no passage in the eBook was relevant enough to answer from.">'
+                '<span class="ara-dot warn"></span>Confidence 0.00</span>')
     value = resp.confidence
     level = "high" if value >= 0.75 else "mid" if value >= 0.5 else "low"
-    pct = round(max(0.0, min(1.0, value)) * 100)
     parts = []
     if resp.retrieval_score is not None:
         parts.append(f"retrieval similarity {resp.retrieval_score:.2f}")
@@ -298,7 +298,7 @@ def _confidence_chip(resp: RAGResponse) -> str:
            "not a measure of factual certainty." + (f" ({', '.join(parts)})" if parts else ""))
     dot = {"high": "ok", "mid": "cyan", "low": "warn"}[level]
     return (f'<span class="ara-chip conf {level}" title="{_e(tip)}">'
-            f'<span class="ara-dot {dot}"></span>{pct}% grounded</span>')
+            f'<span class="ara-dot {dot}"></span>Confidence {max(0.0, min(1.0, value)):.2f}</span>')
 
 
 def _drawer(label: str, body: str, icon: str = "") -> str:
@@ -328,6 +328,25 @@ def _out_of_scope_block(resp: RAGResponse) -> str:
     )
 
 
+REQUIRED_FIELDS = ("query", "final_answer", "retrieved_context_chunks", "confidence_score")
+
+
+def json_payload_html(resp: RAGResponse) -> str:
+    """The exact assignment-format JSON for this answer, as returned by POST /chat."""
+    src = resp.raw or {
+        "query": resp.query, "final_answer": resp.answer,
+        "retrieved_context_chunks": [s.text for s in resp.sources], "confidence_score": resp.confidence,
+    }
+    payload = {k: src.get(k) for k in REQUIRED_FIELDS}
+    # newlines as entities so Streamlit's markdown parser leaves the <pre> block intact
+    body = _e(json.dumps(payload, indent=2, ensure_ascii=False)).replace("\n", "&#10;")
+    return _join(
+        '<div class="ara-drawer-sub">Structured response in the assignment format '
+        '(<code>POST /chat</code> also returns page, similarity and grounding fields)</div>',
+        f'<pre class="ara-json">{body}</pre>',
+    )
+
+
 def assistant_turn_html(resp: RAGResponse, tracker: PipelineTracker, llm_model: Optional[str] = None) -> str:
     meta_bits = []
     if llm_model and not resp.out_of_scope:
@@ -353,6 +372,7 @@ def assistant_turn_html(resp: RAGResponse, tracker: PipelineTracker, llm_model: 
         _confidence_chip(resp),
         _drawer(src_label, sources_html(resp), src_icon) if resp.sources else "",
         _drawer("How this answer was generated", pipeline_html(tracker, resp), step_icon),
+        _drawer("JSON response", json_payload_html(resp), '<span class="ara-chip-ico violet">{ }</span>'),
         '</div>',
     )
     return _ai_turn(body + actions, meta)

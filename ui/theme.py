@@ -114,13 +114,15 @@ html, body, .stApp, .stMarkdown, button, input, textarea, [data-testid="stSideba
 @keyframes ara-breathe { 0%,100% { opacity: .35; } 50% { opacity: 1; } }
 
 /* Answer text */
-.ara-answer-body { font-size: 15.5px; line-height: 1.72; color: var(--text); }
+/* Same display face as the question bubbles; Instrument Serif has one weight, so emphasis
+   is shown upright (non-italic) rather than with a synthetic bold. */
+.ara-answer-body { font: italic 400 19.5px/1.55 var(--serif); color: var(--text); }
 .ara-answer-body p { margin: 0 0 12px; color: var(--text); }
 .ara-answer-body ul { margin: 0 0 12px; padding-left: 20px; }
-.ara-answer-body li { margin: 0 0 7px; color: var(--text); }
+.ara-answer-body li { margin: 0 0 8px; color: var(--text); }
 .ara-answer-body li::marker { color: var(--violet); }
-.ara-answer-body strong { color: var(--text); font-weight: 600; }
-.ara-cite { display: inline-block; font: 500 11.5px var(--mono); color: var(--cyan); background: var(--cyan-soft);
+.ara-answer-body strong { font-style: normal; font-weight: 400; color: var(--violet); }
+.ara-cite { display: inline-block; font: normal 500 11.5px var(--mono); color: var(--cyan); background: var(--cyan-soft);
   border: 1px solid var(--cyan-line); border-radius: 5px; padding: 0 5px; margin: 0 1px; vertical-align: 1px; }
 
 /* Retrieved context */
@@ -196,6 +198,7 @@ html, body, .stApp, .stMarkdown, button, input, textarea, [data-testid="stSideba
   border: 1px solid var(--amber-line); color: var(--amber); font-weight: 700; }
 .ara-oos-title { font: italic 400 24px/1.1 var(--serif); color: var(--amber); }
 .ara-oos p { font-size: 15px; line-height: 1.6; color: var(--text); margin: 0; }
+.ara-oos p:not(.ara-oos-note) { font: italic 400 19.5px/1.5 var(--serif); }
 .ara-oos-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; margin: 18px 0 14px; }
 .ara-oos-grid > div { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
 .ara-oos-grid span { display: block; font: 600 10.5px 'Inter', sans-serif; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
@@ -260,6 +263,9 @@ html, body, .stApp, .stMarkdown, button, input, textarea, [data-testid="stSideba
 .ara-drawer-body { margin-top: 12px; }
 .ara-drawer-sub { font-size: 12.5px; color: var(--muted); margin: 0 0 10px; }
 .ara-oos { padding: 18px 20px; }
+.ara-json { margin: 0; padding: 14px 16px; max-height: 380px; overflow: auto; white-space: pre-wrap; word-break: break-word;
+  font: 400 12px/1.6 var(--mono); color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+.ara-drawer-sub code { font: 500 11.5px var(--mono); color: var(--violet); background: var(--violet-soft); padding: 1px 5px; border-radius: 4px; }
 
 /* Chat input (pinned to the bottom by Streamlit) */
 [data-testid="stBottom"] > div, [data-testid="stBottomBlockContainer"] { background: transparent !important; }

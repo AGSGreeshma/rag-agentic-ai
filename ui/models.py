@@ -34,6 +34,7 @@ class RAGResponse:
     retrieval_score: Optional[float] = None
     rewritten_queries: list[str] = field(default_factory=list)
     latency: Optional[float] = None
+    raw: dict = field(default_factory=dict, repr=False)  # untouched API payload
 
     @property
     def used_sources(self) -> list[Source]:
@@ -76,6 +77,7 @@ class RAGResponse:
             retrieval_score=data.get("retrieval_score"),
             rewritten_queries=data.get("rewritten_queries") or [],
             latency=data.get("latency"),
+            raw=data,
         )
 
 
