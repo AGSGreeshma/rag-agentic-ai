@@ -11,7 +11,7 @@ Questions outside the eBook's scope are refused.
 - **Confidence score** computed from retrieval similarity + LLM groundedness, not a fixed heuristic
 - Page-number metadata on every chunk; answers cite pages, and tests verify every cited page was actually retrieved
 - **FastAPI** endpoint and **Streamlit** UI, both returning `final_answer`, `retrieved_context_chunks`, and `confidence_score`
-- Automated test script with 8 queries (6 in-scope, 2 out-of-scope) — **8/8 passing**
+- Automated test script with 8 queries (6 in-scope, 2 out-of-scope) - **8/8 passing**
 
 ---
 
