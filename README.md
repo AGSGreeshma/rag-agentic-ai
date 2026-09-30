@@ -52,7 +52,7 @@ flowchart TD
 | `grade_documents` | Drops chunks below a cosine-similarity floor (0.25), then an LLM grader (structured output) marks which remaining chunks actually help answer the question. |
 | `rewrite_query` | If fewer than 2 relevant chunks were found, the LLM writes 3 alternative queries (keywords + synonyms, section-heading phrasing, implementation angle) and retrieval runs again. Runs at most once. |
 | `generate` | Answers using **only** the relevant chunks, citing pages. Refuses with a fixed message if the context has nothing relevant. |
-| `check_grounding` | A second LLM call scores (0–1) how well the answer is supported by the context — the hallucination check. Low score → one retry with a stricter instruction. |
+| `check_grounding` | A second LLM call scores (0–1) how well the answer is supported by the context, the hallucination check. Low score → one retry with a stricter instruction. |
 | `finalize` | Computes the confidence score. |
 | `refuse` | Returns the refusal message with confidence 0.0. |
 
@@ -70,7 +70,7 @@ confidence = 0.4 × mean cosine similarity of the relevant chunks
 
 ### 4. Interfaces
 - `app.py` — FastAPI `POST /chat` (graph built once at startup; sync endpoint so blocking LLM calls run in a worker thread)
-- `streamlit_app.py` + `ui/` — chat-style research assistant (light pastel theme). Each answer shows a
+- `streamlit_app.py` + `ui/`- chat-style research assistant (light pastel theme). Each answer shows a
   groundedness chip, its source passages (page + match score) and a live view of the LangGraph pipeline,
   streamed node-by-node from `GET /chat/stream`. The sidebar shows knowledge-base stats and live system
   status from `/kb/info` and `/health`. See `UI_SETUP.md` for the frontend architecture.
@@ -87,7 +87,7 @@ rag-agentic-ai/
 │   ├── config.py                     # Env vars, paths, model names, tuning constants
 │   ├── ingestion.py                  # PDF → chunks → embeddings → Pinecone
 │   └── graph.py                      # LangGraph workflow + run_query helper
-├── ui/                               # Streamlit frontend (talks to the API only)
+├── ui/                               # Streamlit frontend
 │   ├── __init__.py
 │   ├── api_client.py                 # API service layer: live FastAPI client + mock client
 │   ├── models.py                     # Typed response models (RAGResponse, Source, KBInfo, SystemStatus)
@@ -247,7 +247,6 @@ streamlit run streamlit_app.py
 ```
 
 To preview the UI without the backend: `RAG_API_MODE=mock streamlit run streamlit_app.py`
-(sample data, clearly labelled as mock).
 
 ### 5. Run the validation tests
 
@@ -300,7 +299,7 @@ model had picked up a page number printed inside the eBook's own text. Fix: the 
 citing only the page numbers in the `[Passage N | page X]` headers. The test script checks that every
 cited page was actually retrieved, so this can't regress.
 
-**3. Broad questions missed the right section (the multi-query rewrite).** The "challenges and limitations"
+**3. Broad questions missed the right section** The "challenges and limitations"
 query initially failed: it was refused even though the eBook covers the topic. Investigation:
 - `scripts/find_in_pdf.py` showed the content is on pp. 36 and 39–40 ("Challenges and Mitigation
   Strategies of Multi-Agent Systems", "Challenges of Orchestrating Complex Agentic Systems").
